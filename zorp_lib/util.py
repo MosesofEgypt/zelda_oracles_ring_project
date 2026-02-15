@@ -4,7 +4,7 @@ from . import const, opcodes
 def to_bytes(val, size=None):
     return int.to_bytes(
         val, signed=(val<0), byteorder='little', length=(
-            (1+(val not in range(-0x8000, 0x10000)))
+            (1+(val not in range(-0x80, 0x100)))
             if size is None else size
             ),
         )
