@@ -9,7 +9,6 @@ def to_bytes(val, size=None):
             ),
         )
 
-
 def val_to_str(val, max_len=3, percent=True, pad=True):
     '''
     Converts an int to a byte string to be substituted into the game text.
@@ -22,6 +21,24 @@ def val_to_str(val, max_len=3, percent=True, pad=True):
          b"-")
         )
     return prefix + string
+
+def pad_for_bank(size, bank, is_ages=True):
+    '''
+    Returns a size-length string of pad bytes.
+    NOTE: Ages always uses 0x00 as the padding char, while
+          Seasons increments it to match the bank number.
+    '''
+    return [bytes([0 if is_ages else bank])*size]
+
+def pad_for_asm(patch_parts, patch_name, is_ages=False,
+                replace_map=None, patch_banks=None,
+                ):
+    '''
+    Returns a string of pad bytes as long as the serialized patch.
+    '''
+    bank    = patch_banks[patch_name]
+    data    = serialize_patch(patch_parts, replace_map)
+    return pad_for_bank(len(data), bank, is_ages)
 
 def clear_rom_garbage(
         rom_file, ages_garbage_map=(), seas_garbage_map=(),
@@ -96,12 +113,34 @@ def update_replace_map(module, replace_map, is_ages=False, **kw):
 
 
 def get_bank_sizes(rom_file, is_ages=False):
-    # TODO: write this
+    pad_starts = (const.AGES_BANK_PAD_STARTS if is_ages else
+                  const.SEAS_BANK_PAD_STARTS)
     # if searching for padding, this is a reference table for how much
     # padding is available in each bank for each game. the method of
     # searching backward for padding may falsely return true if all
     # padding is skipped, but a matching string is found in the code
     bank_sizes = {}
+    for bank in range(const.MAX_BANKS):
+        start, end = 0, 0
+        if bank in pad_starts:
+            pad     = pad_for_bank(1, bank, is_ages)[0]
+            start   = pad_starts[bank]
+            size    = const.BANK_SIZE - start
+
+            rom_file.seek(start + bank*const.BANK_SIZE)
+            data = rom_file.read(size)
+
+            # search to find the first non-pad char
+            i = 0
+            for i in range(size):
+                if data[i] != pad[0]:
+                    i -= 1
+                    break
+
+            end = i + start + 1
+
+        bank_sizes[bank] = [start, end]
+
     return bank_sizes
 
 
@@ -167,45 +206,27 @@ def serialize_patch(patch_parts, replace_map):
         print(patch_data)
         raise
 
-def pad_for_bank(size, bank, is_ages=True):
-    '''
-    Returns a size-length string of pad bytes.
-    NOTE: Ages always uses 0x00 as the padding char, while
-          Seasons increments it to match the bank number.
-    '''
-    return [bytes([0 if is_ages else bank])*size]
-
-def pad_for_asm(patch_parts, patch_name, is_ages=False,
-                replace_map=None, patch_banks=None,
-                ):
-    '''
-    Returns a string of pad bytes as long as the serialized patch.
-    '''
-    bank    = patch_banks[patch_name]
-    data    = serialize_patch(patch_parts, replace_map)
-    return pad_for_bank(len(data), bank, is_ages)
-
 def find_sig(rom_file, sig, sig_name, is_ages=False,
              replace_map=None, patch_banks=None,
-             bank_end=const.BANK_SIZE, pad_start=0
+             bank_end=const.BANK_SIZE, search_start=0
              ):
     '''
     Searches the bank backwards for the first instance of sig.
     Returns the absolute offset, or -1 if it can't be found.
     '''
-    bank_start = patch_banks[sig_name] * const.BANK_SIZE
+    file_start = search_start + patch_banks[sig_name] * const.BANK_SIZE
 
     if isinstance(sig, (list, tuple)):
         sig = serialize_patch(sig, replace_map)
 
-    rom_file.seek(bank_start+pad_start)
-    data    = rom_file.read(bank_end)
+    rom_file.seek(file_start)
+    data    = rom_file.read(bank_end - search_start)
     # we reverse these to search backwards to check padding first
     offset  = data[::-1].find(sig[::-1])
     if offset >= 0:
         offset = (
             # add the start offset of where the data was read
-            bank_start + pad_start +
+            file_start +
             # adjust to be relative to the start
             len(data) - (offset + len(sig))
             )
@@ -252,7 +273,10 @@ def alloc_patch(name, new, old=None, *, rom_file, bank_sizes,
         )
     bank_sizes = {} if bank_sizes is None else bank_sizes
     bank       = patch_banks[name]
-    start, end = bank_sizes.get(bank, [0, const.BANK_SIZE])
+    start, end = (
+        (0, const.BANK_SIZE) if pad is None else
+        bank_sizes.get(bank, [0, const.BANK_SIZE])
+        )
 
     # see if the new sig exists if the code was inserted into padding
     off = -1 if pad is None else find_sig(

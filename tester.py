@@ -9,3 +9,5 @@ for path in (
         ):
     print(path)
     patching.apply_patches(path)
+
+input("Finished.")

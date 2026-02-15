@@ -121,7 +121,7 @@ def apply_patches(filepath, verify=True):
             rom_file        = f, verify = verify,
             is_ages         = is_ages, is_seasons=is_seasons,
             # keeps track of free space in each bank
-            bank_sizes      = util.get_bank_sizes(f, is_ages),
+            bank_sizes      = {},
             # holds all text replacements that some patches may need
             # to insert into the text data(i.e. ring damage modifiers)
             text_overrides  = {},
@@ -148,6 +148,16 @@ def apply_patches(filepath, verify=True):
             seas_garbage_map=const.SEAS_BANK_GARBAGE,
             **kwargs
             )
+
+        # do this only after the garbage has been cleared
+        kwargs["bank_sizes"].update(util.get_bank_sizes(f, is_ages))
+
+        print("\nPer-bank free-space:")
+        print("\tbank\tsize\tstart\tend")
+        for bank in sorted(kwargs["bank_sizes"]):
+            start, end = kwargs["bank_sizes"][bank]
+            print(f"\t{bank}\t{end-start}\t{start}\t{end}")
+        print("\tbank\tsize\tstart\tend\n")
 
         for prepare_func in (
                 prepare_shared_patches,
