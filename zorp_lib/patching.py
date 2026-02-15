@@ -152,13 +152,6 @@ def apply_patches(filepath, verify=True):
         # do this only after the garbage has been cleared
         kwargs["bank_sizes"].update(util.get_bank_sizes(f, is_ages))
 
-        print("\nPer-bank free-space:")
-        print("\tbank\tsize\tstart\tend")
-        for bank in sorted(kwargs["bank_sizes"]):
-            start, end = kwargs["bank_sizes"][bank]
-            print(f"\t{bank}\t{end-start}\t{start}\t{end}")
-        print("\tbank\tsize\tstart\tend\n")
-
         for prepare_func in (
                 prepare_shared_patches,
                 prepare_gasha_drop_patches,
@@ -200,3 +193,5 @@ def apply_patches(filepath, verify=True):
                     replace_map=kwargs['replace_map'],
                     patch_banks=kwargs['patch_banks']
                     )
+
+        util.print_bank_free_space(kwargs["bank_sizes"])

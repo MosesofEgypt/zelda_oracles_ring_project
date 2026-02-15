@@ -129,9 +129,12 @@ def get_bank_sizes(rom_file, is_ages=False):
 
             rom_file.seek(start + bank*const.BANK_SIZE)
             data = rom_file.read(size)
+            i = 0
+            while data[i] != pad[0] and start < size:
+                i += 1
 
             # search to find the first non-pad char
-            i = 0
+            start, i = start+i, 0
             for i in range(size):
                 if data[i] != pad[0]:
                     i -= 1
@@ -139,7 +142,7 @@ def get_bank_sizes(rom_file, is_ages=False):
 
             end = i + start + 1
 
-        bank_sizes[bank] = [start, end]
+        bank_sizes[bank] = [start, end, end]
 
     return bank_sizes
 
@@ -254,6 +257,20 @@ def offset_rel_to_abs(offset, bank):
     bank = 1 if bank == 0 else bank
     return offset + (bank-1)*const.BANK_SIZE
 
+def print_bank_free_space(bank_sizes):
+    '''
+    Prints a small table showing the per-bank free space
+    before and after all patches have been applied
+    '''
+    print("\nPrevious/Current per-bank free space:")
+    print("\tbank\tstart\tpre-end\tcur-end\tpre-len\tcur-len")
+    for bank in sorted(bank_sizes):
+        start, curr_end, init_end = bank_sizes[bank]
+        if start != curr_end and start != init_end:
+            print(f"\t{bank}\t{start}\t{init_end}\t{curr_end}"
+                  f"\t{init_end-start}\t{curr_end-start}")
+    print("\tbank\tstart\tpre-end\tcur-end\tpre-len\tcur-len\n")
+
 def alloc_patch(name, new, old=None, *, rom_file, bank_sizes,
                 is_ages=False, replace_map=None, patch_banks=None, **kw):
     '''
@@ -273,9 +290,9 @@ def alloc_patch(name, new, old=None, *, rom_file, bank_sizes,
         )
     bank_sizes = {} if bank_sizes is None else bank_sizes
     bank       = patch_banks[name]
-    start, end = (
-        (0, const.BANK_SIZE) if pad is None else
-        bank_sizes.get(bank, [0, const.BANK_SIZE])
+    start, end, _ = (
+        [0, const.BANK_SIZE, const.BANK_SIZE] if pad is None else
+        bank_sizes.setdefault(bank, [0, const.BANK_SIZE, const.BANK_SIZE])
         )
 
     # see if the new sig exists if the code was inserted into padding
@@ -305,9 +322,7 @@ def alloc_patch(name, new, old=None, *, rom_file, bank_sizes,
         # NOTE: need to do modulus since the address of banks 1 and higher
         #       starts at 0x4000, which will throw off our calculations.
         if pad and not skip:
-            bank_sizes.update({
-                bank: [start, rel_off%const.BANK_SIZE]
-                })
+            bank_sizes[bank][:-1] = [start, rel_off%const.BANK_SIZE]
 
         replace_map[name] = to_bytes(rel_off, 2)
 
