@@ -199,7 +199,8 @@ def serialize_patch(patch_parts, replace_map):
                                  "Cannot calculate relative jump")
             off = labels[label] - src_off
             if off not in range(-128, 128):
-                raise ValueError("Relative jump offset {off} too large.")
+                raise ValueError(f"Relative jump offset {off} "
+                                 f"too large in label {label}.")
 
             patch_data[idx] = to_bytes(off)
 

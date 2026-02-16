@@ -6,55 +6,7 @@ from ..shared.const import *
 
 # NOTE: the below tables are ringId followed by weight within the tier
 RING_TIER0_TABLE_ASM = [
-    # tier0: cosmetic/low-utility
-    OCTO_RING,          5,
-    LIKE_LIKE_RING,     5,
-    MOBLIN_RING,        5,
-    SUBROSIAN_RING,     5,
-    FIRST_GEN_RING,     2,
-    GBOY_COLOR_RING,    4,
-    PEACE_RING,         1,
-    FIST_RING,          5,
-    TOSS_RING,          5,
-    MAPLES_RING,        1,
-    GREEN_JOY_RING,     1,
-    0xff,               0, # terminator
-    ]
-
-RING_TIER1_TABLE_ASM = [
-    # tier1: bad-buff/mod-utility
-    CURSE_POWER_RING,   5,
-    RANG_RING_L1,       4,
-    ARMOR_RING_L1,      2,
-    CURSE_ARMOR_RING,   5,
-    BOMBERS_RING,       1,
-    BOMBPROOF_RING,     1,
-    ZORA_RING,          3,
-    HIKERS_RING,        1,
-    GASHA_RING,         4,
-    RED_JOY_RING,       1,
-    BLUE_JOY_RING,      3,
-    0xff,               0, # terminator
-    ]
-
-RING_TIER2_TABLE_ASM = [
-    # tier2: mod-buff/high-utility
-    POWER_RING_L2,      2,
-    BLAST_RING,         1,
-    RANG_RING_L2,       5,
-    ARMOR_RING_L2,      2,
-    GREEN_HOLY_RING,    2,
-    BLUE_HOLY_RING,     2,
-    RED_HOLY_RING,      2,
-    ROCS_RING,          4,
-    HEART_RING_L1,      1,
-    STEADFAST_RING,     3,
-    LIGHT_RING_L1,      1,
-    0xff,               0, # terminator
-    ]
-
-RING_TIER3_TABLE_ASM = [
-    # tier3: high-buff/good-utility
+    # tier0: high-buff/good-utility
     ENERGY_RING,        1,
     FAIRYS_RING,        3,
     GREEN_LUCK_RING,    2,
@@ -66,7 +18,55 @@ RING_TIER3_TABLE_ASM = [
     CHARGE_RING,        1,
     HEART_RING_L2,      1,
     EXPERTS_RING,       3,
-    0xff,               0, # terminator
+    0xff,               # terminator
+    ]
+
+RING_TIER1_TABLE_ASM = [
+    # tier1: mod-buff/high-utility
+    POWER_RING_L2,      2,
+    BLAST_RING,         1,
+    RANG_RING_L2,       5,
+    ARMOR_RING_L2,      2,
+    GREEN_HOLY_RING,    2,
+    BLUE_HOLY_RING,     2,
+    RED_HOLY_RING,      2,
+    ROCS_RING,          4,
+    HEART_RING_L1,      1,
+    STEADFAST_RING,     3,
+    LIGHT_RING_L1,      1,
+    0xff,               # terminator
+    ]
+
+RING_TIER2_TABLE_ASM = [
+    # tier2: bad-buff/mod-utility
+    CURSE_POWER_RING,   5,
+    RANG_RING_L1,       4,
+    ARMOR_RING_L1,      2,
+    CURSE_ARMOR_RING,   5,
+    BOMBERS_RING,       1,
+    BOMBPROOF_RING,     1,
+    ZORA_RING,          3,
+    HIKERS_RING,        1,
+    GASHA_RING,         4,
+    RED_JOY_RING,       1,
+    BLUE_JOY_RING,      3,
+    0xff,               # terminator
+    ]
+
+RING_TIER3_TABLE_ASM = [
+    # tier3: cosmetic/low-utility
+    OCTO_RING,          5,
+    LIKE_LIKE_RING,     5,
+    MOBLIN_RING,        5,
+    SUBROSIAN_RING,     5,
+    FIRST_GEN_RING,     2,
+    GBOY_COLOR_RING,    4,
+    PEACE_RING,         1,
+    FIST_RING,          5,
+    TOSS_RING,          5,
+    MAPLES_RING,        1,
+    GREEN_JOY_RING,     1,
+    0xff,               # terminator
     ]
 
 RING_TIER4_TABLE_ASM = [
@@ -74,7 +74,7 @@ RING_TIER4_TABLE_ASM = [
     # NOTE: only available if every other tiered ring was obtained
     GREEN_RING,         1,
     GOLD_RING,          1,
-    0xff,               0, # terminator
+    0xff,               # terminator
     ]
 
 RING_TIER4_TABLE_SECRET_ASM = [
@@ -90,7 +90,7 @@ RING_TIER4_TABLE_SECRET_ASM = [
     # seas secret
     GOLD_JOY_RING,      1,
     SWIMMERS_RING,      1,
-    0xff,               0, # terminator
+    0xff,               # terminator
     ]
 
 AGES_ORIG_GASHA_MATURITY_TABLE_ASM = [
@@ -169,9 +169,13 @@ NEW_GET_RANDOM_TIERED_RING_ASM = [
     SET_ROM_BANK,                   # setrombank
 
     # put the new-ring-chance into b as a value in the range 0x0F - 0xFF
-    LD_A_C,                         # ld a,c
-    OR,         0x0F,               # or $0f
-    LD_B_A,                         # ld b,a
+    #LD_A_C,                         # ld a,c
+    #OR,         0x0F,               # or $0f
+    #LD_B_A,                         # ld b,a
+    # TEST CODE
+    LD_C,       0xF0,               # ld c,$F0
+    LD_B,       0xFF,               # ld b,$FF
+    # TEST CODE
 
     # put the ring tier into c as a value in the range 0x00 - 0x04
     LD_A_C,                         # ld a,c
@@ -211,18 +215,19 @@ GET_RANDOM_TIERED_RING1_ASM = [
     # @param        d       Ring tier(for checking if secret tier is accessible)
     # @param[out]   e       Randomly chosen ring from the given tier
 
+    # cant guarantee new secret-tier rings
+    LD_A_D,                         # ld a,d
+    CP,             4,              # cp $04
+    JR_NC,  "@interimJump",         # jr nc,@interimJump
+
     # check whether or not we're going to guarantee the ring is new
-    Label("@trySelectRing"),
+    Label("@trySelectNewRing"),
     INC_C,                          # inc c
     CALL,   GET_RANDOM_NUMBER,      # call getRandomNumber
     CP_B,                           # cp b
 
     # select a random ring if the guaranteed-new chance wasn't hit
-    JR_NC,  "@selectRandomRing",    # jr nc,@selectRandomRing
-    LD_A_C,                         # ld a,c
-
-    # wont guarantee new secret-tier rings
-    CP,             4,              # cp $04
+    Label("@interimJump"),
     JR_NC,  "@selectRandomRing",    # jr nc,@selectRandomRing
         # use e as a counter to increment through the bytes
         XOR_A,                      #   xor a
@@ -230,6 +235,7 @@ GET_RANDOM_TIERED_RING1_ASM = [
         DEC_E,                      #   dec e
 
         Label("@tryGetNewRing"),
+        PUSH_BC,                    #   push bc
         INC_E,                      #   inc e
         # the masks table has a stride of 8, so we need to
         # multiply the tier by 8 to get our starting offset
@@ -237,23 +243,21 @@ GET_RANDOM_TIERED_RING1_ASM = [
         ADD_A,                      #   add a
         ADD_A,                      #   add a
         ADD_A,                      #   add a
-        # add the byte offset   
         ADD_E,                      #   add e
 
-        PUSH_BC,                    #   push bc
-        # get the rings obtained mask byte in b
         LD_HL,      RING_TIER_MASKS,#   ld hl,ringTierMasks
         RST_10H,                    #   rst_addAToHl
+        # get the rings obtained mask byte in b
         LD_B_HLP,                   #   ld b,(hl)
 
-        # get the rings obtained byte in a
         LD_A_E,                     #   ld a,e
         LD_HL,      RINGS_OBTAINED, #   ld hl,wRingsObtained
         RST_10H,                    #   rst_addAToHl
+        # get the rings obtained byte in a
         LD_A_HLP,                   #   ld a,(hl)
 
-        # if the masked obtained rings byte equals the mask, 
-        # we need to increment to checking the next byte
+        # if the masked obtained rings byte equals the mask then we have all
+        # rings under this mask. need to increment to checking the next byte
         AND_B,                      #   and b
         CP_B,                       #   cp b
         POP_BC,                     #   pop bc
@@ -272,33 +276,39 @@ GET_RANDOM_TIERED_RING1_ASM = [
             LD_A_E,                 #     ld a,e
             AND,  0x07,             #     and $07
             LD_E_A,                 #     ld e,a
-            ADD_A,                  #     add a
-            ADD_A,                  #     add a
-            ADD_A,                  #     add a
             LD_HL,  RINGS_OBTAINED, #     ld hl,wRingsObtained
             RST_10H,                #     rst_addAToHl
             LD_B_HLP,               #     ld b,(hl)
 
             # mask it with the obtained rings
-            LD_A_E,                 #     ld a,e
+            LD_A_C,                 #     ld a,c
+            ADD_A,                  #     add a
+            ADD_A,                  #     add a
+            ADD_A,                  #     add a
+            ADD_E,                  #     add e
             LD_HL,  RING_TIER_MASKS,#     ld hl,ringTierMasks
             RST_10H,                #     rst_addAToHl
             LD_A_HLP,               #     ld a,(hl)
             OR_A,                   #     or a
+            # mask must contain some rings
             JR_Z, "@selectByteLoop",#     jr z,@selectByteLoop
             LD_A_B,                 #     ld a,b
-            CP_HLP,                 #     cp (hl)
+            # mask must contain a missing ring
+            AND_HLP,                #     and (hl)
+            XOR_HLP,                #     xor (hl)
             JR_Z, "@selectByteLoop",#     jr z,@selectByteLoop
 
             # found a byte with an unobtained ring. start with a random
             # bit and cycle through them until we hit an unobtained ring
             LD_D,       0,          #     ld d,$00
+            LD_C_HLP,               #     ld c,(hl)
+
+            # multiply e by 8 since it's the high bits of the ring index
             LD_A_E,                 #     ld a,e
             ADD_A,                  #     add a
             ADD_A,                  #     add a
             ADD_A,                  #     add a
             LD_E_A,                 #     ld e,a
-            LD_C_HLP,               #     ld c,(hl)
             CALL, GET_RANDOM_NUMBER,#     call getRandomNumber
             AND,  0x07,             #     and $07
 
@@ -308,7 +318,7 @@ GET_RANDOM_TIERED_RING1_ASM = [
             RRC_C,                  #     rrc c
             INC_D,                  #     inc d
             DEC_A,                  #     dec a
-            JR_Z,  "@selectBitLoop",#     jr z,@selectBitLoop
+            JR_NZ, "@selectBitLoop",#     jr nz,@selectBitLoop
 
             # find the first bit with the mask set and the obtained unset
             Label("@selectRingLoop"),
@@ -316,9 +326,9 @@ GET_RANDOM_TIERED_RING1_ASM = [
             RRC_C,                  #     rrc c
             INC_D,                  #     inc d
             BIT0_C,                 #     bit 0,c
-            JR_Z, "@selectRingLoop",#     jr z,@selectBitLoop
+            JR_Z, "@selectRingLoop",#     jr z,@selectRingLoop
             BIT0_B,                 #     bit 0,b
-            JR_NZ,"@selectRingLoop",#     jr nz,@selectBitLoop
+            JR_NZ,"@selectRingLoop",#     jr nz,@selectRingLoop
 
             # we're at a random bit in these bytes, so we need to
             # make sure we don't increment outside the [0-7] range
@@ -336,18 +346,19 @@ GET_RANDOM_TIERED_RING1_ASM = [
         # that was the last byte, so we might have to try another tier
         LD_A,       3,                  # ld a,$03
         CP_C,                           # cp c
-        JR_Z, "@goToSecretTier",        # jr z,@goToSecretTier
-            JR_C, "@trySelectRing",     #   jr c,@trySelectRing
-                # this is the last tier, so we have to give up
+        JR_Z, "@maybeGoToSecretTier",   # jr z,@maybeGoToSecretTier
+            JR_C, "@trySelectNewRing",  #   jr c,@trySelectNewRing
+                # reset to the original tier and select randomly
+                LD_C_D,                 #     ld c,d
                 JR, "@selectRandomRing",#     jr @selectRandomRing
 
-        Label("@goToSecretTier"),
-            # we can only increment to the final tier if we incremented
-            # through the other tiers(tier started as $00). otherwise we
-            # reset to the original tier, fall through, and select randomly
+        Label("@maybeGoToSecretTier"),
+            # we can only increment to the final tier if we
+            # went through the other tiers, starting with 0
             LD_A_D,                     #   ld a,d
             OR_D,                       #   or d
-            JR_Z, "@trySelectRing",     #   jr z,@trySelectRing
+            JR_Z, "@selectRandomRing",  #   jr z,@selectRandomRing
+                # reset to the original tier, fall through, and select randomly
                 LD_C_D,                 #     ld c,d
 
     Label("@selectRandomRing"),
@@ -363,7 +374,7 @@ GET_RANDOM_TIERED_RING1_ASM = [
     # to simplify logic, the random number will only be in the range [0,254]
     CP,         0xFF,               # cp $FF
     LD_B_A,                         # ld b,a
-    JR_C, "@selectRingByWeight",    # jr nz,@selectRingByWeight
+    JR_NZ, "@selectRingByWeight",   # jr nz,@selectRingByWeight
     DEC_B,                          #   dec b
 
     # loop through the rings in the tier until one of weighted
@@ -378,8 +389,8 @@ GET_RANDOM_TIERED_RING1_ASM = [
     LD_E_A,                         # ld e,a
     LDI_A_HLP,                      # ldi a,(hl)
     CP_B,                           # cp b
-    JR_NC,   "@selectRingByWeight", # jr nc,@selectRingByWeight
-    RET,                            # ret
+    RET_NC,                         # ret nc
+    JR,     "@selectRingByWeight",  # jr @selectRingByWeight
     ]
 
 ORIG_DETERMINE_GASHA_DROP_ASM = [
@@ -439,14 +450,14 @@ ORIG_DETERMINE_GASHA_DROP_ASM = [
 #       in the space cleared of gashaTreasures
 ORIG_GET_GASHA_RING_TIER_ASM = [
     LD_A_B,                 # ld a,b
-    b'\x1e\x02',            # ld e,Interaction.subid
-    b'\x12',                # ld (de),a
-    b'\x21',GASHA_TREASURES,# ld hl,@gashaTreasures
+    LD_E,       2,          # ld e,Interaction.subid
+    LD_DEP_A,               # ld (de),a
+    LD_HL,  GASHA_TREASURES,# ld hl,@gashaTreasures
     RST_18H,                # rst_addDoubleIndex
-    b'\x2a',                # ldi a,(hl)
-    b'\x4e',                # ld c,(hl)
-    b'\x3e\x2d',            # ld a,TREASURE_RING
-    b'\x20\x03',            # jr nz,+
+    LDI_A_HLP,              # ldi a,(hl)
+    LD_C_HLP,               # ld c,(hl)
+    LD_A,       0x2d,       # ld a,TREASURE_RING
+    JR_NZ,      3,          # jr nz,+
     ]
 
 TIER_TABLE_START = 0x479C
@@ -467,15 +478,10 @@ SEAS_ORIG_RING_TIERS_TABLE_ASM = [
     ]
 del TIER_TABLE_START
 NEW_RING_TIERS_TABLE_ASM = [
-    # NOTE: just so i don't have to go with the old confusing naming
-    #       convention of tier 0 being the 2nd best and 4 being the
-    #       best tier, we're reversing it. this way tier quality will
-    #       increase with the tier number. to keep from having to update
-    #       a ton of code, we're sticking with the original tier order
-    RING_TIER3_TABLE,
-    RING_TIER2_TABLE,
-    RING_TIER1_TABLE,
     RING_TIER0_TABLE,
+    RING_TIER1_TABLE,
+    RING_TIER2_TABLE,
+    RING_TIER3_TABLE,
     RING_TIER4_TABLE,
     ]
 

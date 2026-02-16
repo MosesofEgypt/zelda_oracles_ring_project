@@ -45,8 +45,12 @@ def prepare_gasha_drop_patches(**kw):
         asm.AGES_ORIG_GASHA_MATURITY_TABLE_ASM if kw.get("is_ages") else
         asm.SEAS_ORIG_GASHA_MATURITY_TABLE_ASM
         )
+    ring_tier4_table_asm = (
+        asm.RING_TIER4_TABLE_SECRET_ASM if kw.get("gasha_secret_rings") else
+        asm.RING_TIER4_TABLE_ASM
+        )
     patch_data = [
-        [RING_TIER4_TABLE,        asm.RING_TIER4_TABLE_ASM],
+        [RING_TIER4_TABLE,        ring_tier4_table_asm],
         [RING_TIER3_TABLE,        asm.RING_TIER3_TABLE_ASM],
         [RING_TIER2_TABLE,        asm.RING_TIER2_TABLE_ASM],
         [RING_TIER1_TABLE,        asm.RING_TIER1_TABLE_ASM],
@@ -64,6 +68,4 @@ def prepare_gasha_drop_patches(**kw):
         seas_garbage_map=const.SEAS_BANK_GARBAGE,
         **kw
         )
-    # NOTE: not ready yet
-    patch_data = []
     return [util.alloc_patch(*args, **kw) for args in patch_data]

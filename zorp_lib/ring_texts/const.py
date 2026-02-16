@@ -10,7 +10,7 @@ RING_TEXT_SNIPS = [
         ("BLUE", "Blue"),
         ("GOLD", "Gold"),
         ("RED", "Red"),
-        ("CURSE_", "Curse "),
+        ("_CURSE_RING", " Curse Ring"),
         ("EFFECT_UP", "effect {{TXT_UP}}"),
         ("ARMOR_RING", "Armor Ring"),
         ("POWER_RING", "Power Ring"),
@@ -46,6 +46,8 @@ RING_TEXT_SNIPS = [
 RING_TEXT_STRINGS = [
     dict(name=name, desc=desc)
     for name, desc in [
+        # NOTE: names cannot go over 15 characters, or they won't render
+        #       properly in the appraisal textbox Vasu says their name in
         ("Vasu{S_RING}", ("Press {{TXT_COLOR}}\x01Ring Box{{TXT_COLOR}}\x00{{TXT_NEWL}}"
                           "to swap rings")),
         ("{POWER_RING_L}1",
@@ -70,8 +72,8 @@ RING_TEXT_STRINGS = [
         ("{BLUE} Ring", "{DEF}{{BLUE_RING_VAL}}%"),
         ("{GREEN} Ring", ("{ATK}{{GREEN_RING_VAL1}}%{{TXT_NEWL}}"
                           "{DEF}{{GREEN_RING_VAL2}}%")),
-        ("{CURSE_}{POWER_RING}", ("{ATK}{{CURSE_RING_VAL1}}%{{TXT_NEWL}}"
-                                  "{{TXT_HEART}} cap of {{CURSE_RING_VAL2}}")),
+        ("{RED}{_CURSE_RING}", ("{ATK}{{CURSE_RING_VAL1}}%{{TXT_NEWL}}"
+                                "{{TXT_HEART}} cap of {{CURSE_RING_VAL2}}")),
         ("Expert{S_RING}", ("{FREE_HAND_PUNCH}"
                             "{SECRET_EFFECTS}")),
         ("Blast Ring", ("Blast size/dmg.{{TXT_UP}}"
@@ -83,8 +85,8 @@ RING_TEXT_STRINGS = [
         ("Maple{S_RING}", "Maple meetings {{TXT_UP}}"),
         ("Steadfast Ring", ("Knockback {{TXT_DOWN}}"
                             "{SECRET_EFFECTS}")),
-        ("Mystic Seed Ring", ("Mystic seed{{TXT_NEWL}}"
-                              "{EFFECT_UP}{{TXT_UP}}")),
+        ("Mystic Ring", ("Mystic seed{{TXT_NEWL}}"
+                         "{EFFECT_UP}{{TXT_UP}}")),
         ("Toss Ring", ("Throw dist. {{TXT_UP}}"
                        "{SECRET_EFFECTS}")),
         ("{HEART_RING_L}1", ("{HEART_RECOVERY}"
@@ -143,8 +145,8 @@ RING_TEXT_STRINGS = [
                             "{SECRET_EFFECTS}")),
         ("Energy Ring", ("Chrg. fires beam"
                          "{SECRET_EFFECTS}")),
-        ("{CURSE_}{ARMOR_RING}", ("Dmg. taken/dealt{{TXT_NEWL}}"
-                                  "reduced to {{TXT_HEART}}/4")),
+        ("{BLUE}{_CURSE_RING}", ("Dmg. taken/dealt{{TXT_NEWL}}"
+                                 "reduced to {{TXT_HEART}}/4")),
         ("GBA Nature Ring", ("Invin. time +60%"
                              "{CAN_STACK}")),
         ("{RED}{COLOR_RING}", ("1K beasts slain{{TXT_NEWL}}"
