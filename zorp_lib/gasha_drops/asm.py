@@ -4,6 +4,7 @@ from ..opcodes import *
 from ..shared.const import *
 
 
+# NOTE: the below tables are ringId followed by weight within the tier
 RING_TIER0_TABLE_ASM = [
     # tier0: cosmetic/low-utility
     OCTO_RING,          5,
@@ -68,7 +69,6 @@ RING_TIER3_TABLE_ASM = [
     0xff,               0, # terminator
     ]
 
-# NOTE: the below tables are ringId followed by weight within the tier
 RING_TIER4_TABLE_ASM = [
     # tier4: best-buff/best-utility
     # NOTE: only available if every other tiered ring was obtained
@@ -78,6 +78,7 @@ RING_TIER4_TABLE_ASM = [
     ]
 
 RING_TIER4_TABLE_SECRET_ASM = [
+    # tier4: best-buff/best-utility
     GREEN_RING,         3,
     GOLD_RING,          3,
     # these rings are normally obtained with secrets, but
@@ -92,45 +93,294 @@ RING_TIER4_TABLE_SECRET_ASM = [
     0xff,               0, # terminator
     ]
 
+AGES_ORIG_GASHA_MATURITY_TABLE_ASM = [
+    0x40, 150,  # .db TREASURE_ESSENCE          150
+    0x2b,  36,  # .db TREASURE_HEART_PIECE       36
+    0x41, 100,  # .db TREASURE_TRADEITEM        100
+    0x29,   4,  # .db TREASURE_HEART_REFILL	  4
+    0x00,       # .db $00
+    ]
+
+SEAS_ORIG_GASHA_MATURITY_TABLE_ASM = [
+    0x40, 150,  # .db TREASURE_ESSENCE          150
+    0x2b, 100,  # .db TREASURE_HEART_PIECE      100
+    0x41, 100,  # .db TREASURE_TRADEITEM        100
+    0x29,   4,  # .db TREASURE_HEART_REFILL	  4
+    0x00,       # .db $00
+    ]
+
+NEW_GASHA_MATURITY_TABLE_ASM = [
+    0x40, 250,  # .db TREASURE_ESSENCE          250
+    0x2b, 150,  # .db TREASURE_HEART_PIECE      150
+    0x41, 200,  # .db TREASURE_TRADEITEM        200
+    0x29,   2,  # .db TREASURE_HEART_REFILL	  2
+    0x00,       # .db $00
+    ]
+
 ORIG_GET_RANDOM_TIERED_RING_ASM = [
     # getRandomRingOfGivenTier:
     # @param        c   Ring tier
     # @param[out]   a   TREASURE_RING (to be passed to "giveTreasure")
     # @param[out]   c   Randomly chosen ring from the given tier (to be passed to "giveTreasure")
-    LDH_A_A8,   H_ROM_BANK,     # ldh a,(<hRomBank)
+    LDH_A,      H_ROM_BANK,     # ldh a,(<hRomBank)
     PUSH_AF,                    # push af
     LD_A,       0x3F,           # ld a,$3f
-    LDH_A8_A,   H_ROM_BANK,     # ldh (<hRomBank),a
+    LDH_A8,     H_ROM_BANK,     # ldh (<hRomBank),a
     SET_ROM_BANK,               # setrombank
 
-    b'\x06\x01',                # ld b,$01
-    b'\x79',                    # ld a,c
-    b'\xfe\x04',                # cp $04
-    b'\x28\x02',                # jr z,+
-    b'\x06\x07',                # ld b,$07
-    # +
-    b'\x21',RING_TIER_TABLE,    # ld hl,bank3f.ringTierTable
-    b'\xdf',                    # rst_addDoubleIndex
-    b'\x2a',                    # ldi a,(hl)
-    b'\x66',                    # ld h,(hl)
-    b'\x6f',                    # ld l,a
+    LD_B,       1,              # ld b,$01
+    LD_A_C,                     # ld a,c
+    CP,         4,              # cp $04
+    JR_Z,     "+",              # jr z,+
+    LD_B,       7,              #   ld b,$07
+    Label("+"),
+    LD_HL,      RING_TIER_TABLE,# ld hl,bank3f.ringTierTable
+    RST_18H,                    # rst_addDoubleIndex
+    LDI_A_HLP,                  # ldi a,(hl)
+    LD_H_HLP,                   # ld h,(hl)
+    LD_L_A,                     # ld l,a
 
-    b'\xcd',GET_RANDOM_NUMBER,  # call getRandomNumber
+    CALL,   GET_RANDOM_NUMBER,  # call getRandomNumber
 
-    b'\xa0',                    # and b
-    b'\x4f',                    # ld c,a
-    b'\x06\x00',                # ld b,$00
-    b'\x09',                    # add hl,bc
-    b'\x4e',                    # ld c,(hl)
+    AND_B,                      # and b
+    LD_C_A,                     # ld c,a
+    LD_B,        0,             # ld b,$00
+    ADD_HL_BC,                  # add hl,bc
+    LD_C_HLP,                   # ld c,(hl)
 
-    b'\xf1',                    # pop af
-    b'\xe0',H_ROM_BANK,         # ldh (<hRomBank),a
+    POP_AF,                     # pop af
+    LDH_A8,     H_ROM_BANK,     # ldh (<hRomBank),a
     SET_ROM_BANK,               # setrombank
 
-    b'\x3e\x2d',                # ld a,TREASURE_RING
-    b'\xc9',                    # ret
+    LD_A,       0x2D,           # ld a,TREASURE_RING
+    RET,                        # ret
     ]
-NEW_GET_RANDOM_TIERED_RING_ASM = list(ORIG_GET_RANDOM_TIERED_RING_ASM)
+NEW_GET_RANDOM_TIERED_RING_ASM = [
+    # getRandomRingOfGivenTier:
+    # @param        c   b0-b3: Ring tier,   b4-b7: new-ring chance
+    # @param[out]   a   TREASURE_RING (to be passed to "giveTreasure")
+    # @param[out]   c   Randomly chosen ring from the given tier (to be passed to "giveTreasure")
+    LDH_A,      H_ROM_BANK,         # ldh a,(<hRomBank)
+    PUSH_AF,                        # push af
+    PUSH_BC,                        # push bc
+    PUSH_DE,                        # push de
+    LD_A,       0x3F,               # ld a,$3f
+    LDH_A8,     H_ROM_BANK,         # ldh (<hRomBank),a
+    SET_ROM_BANK,                   # setrombank
+
+    # put the new-ring-chance into b as a value in the range 0x0F - 0xFF
+    LD_A_C,                         # ld a,c
+    OR,         0x0F,               # or $0f
+    LD_B_A,                         # ld b,a
+
+    # put the ring tier into c as a value in the range 0x00 - 0x04
+    LD_A_C,                         # ld a,c
+    AND,           7,               # and a,$07
+    CP,            4,               # cp $04
+    JR_C, "@tierDecided",           # jr c,@tierDecided
+        LD_A,      4,               #   ld a,$04
+    Label("@tierDecided"),
+    LD_C_A,                         # ld c,a
+
+    # store the original tier in d for checking if secret tier is accessible
+    LD_D_C,                         # ld d,c
+    DEC_C,                          # dec c
+
+    # select a ring based on tier, decrementing it until we're either
+    # not guaranteed to get a new ring, or we find a new ring to get.
+    CALL, GET_RANDOM_TIERED_RING1,  # call getRandomTieredRing1
+
+    # load the selected ring into the output register
+    LD_C_E,                         # ld c,e
+
+    POP_DE,                         # pop de
+    POP_AF,                         # pop af
+    LD_B_A,                         # ld b,a
+    POP_AF,                         # pop af
+    LDH_A8,     H_ROM_BANK,         # ldh (<hRomBank),a
+    SET_ROM_BANK,                   # setrombank
+
+    LD_A,       0x2d,               # ld a,TREASURE_RING
+    RET,                            # ret
+    ]
+
+GET_RANDOM_TIERED_RING1_ASM = [
+    # getRandomRingOfGivenTier:
+    # @param        b       New-ring chance
+    # @param        c       Ring tier - 1(for incrementing)
+    # @param        d       Ring tier(for checking if secret tier is accessible)
+    # @param[out]   e       Randomly chosen ring from the given tier
+
+    # check whether or not we're going to guarantee the ring is new
+    Label("@trySelectRing"),
+    INC_C,                          # inc c
+    CALL,   GET_RANDOM_NUMBER,      # call getRandomNumber
+    CP_B,                           # cp b
+
+    # select a random ring if the guaranteed-new chance wasn't hit
+    JR_NC,  "@selectRandomRing",    # jr nc,@selectRandomRing
+    LD_A_C,                         # ld a,c
+
+    # wont guarantee new secret-tier rings
+    CP,             4,              # cp $04
+    JR_NC,  "@selectRandomRing",    # jr nc,@selectRandomRing
+        # use e as a counter to increment through the bytes
+        XOR_A,                      #   xor a
+        LD_E_A,                     #   ld e,a
+        DEC_E,                      #   dec e
+
+        Label("@tryGetNewRing"),
+        INC_E,                      #   inc e
+        # the masks table has a stride of 8, so we need to
+        # multiply the tier by 8 to get our starting offset
+        LD_A_C,                     #   ld a,c
+        ADD_A,                      #   add a
+        ADD_A,                      #   add a
+        ADD_A,                      #   add a
+        # add the byte offset   
+        ADD_E,                      #   add e
+
+        PUSH_BC,                    #   push bc
+        # get the rings obtained mask byte in b
+        LD_HL,      RING_TIER_MASKS,#   ld hl,ringTierMasks
+        RST_10H,                    #   rst_addAToHl
+        LD_B_HLP,                   #   ld b,(hl)
+
+        # get the rings obtained byte in a
+        LD_A_E,                     #   ld a,e
+        LD_HL,      RINGS_OBTAINED, #   ld hl,wRingsObtained
+        RST_10H,                    #   rst_addAToHl
+        LD_A_HLP,                   #   ld a,(hl)
+
+        # if the masked obtained rings byte equals the mask, 
+        # we need to increment to checking the next byte
+        AND_B,                      #   and b
+        CP_B,                       #   cp b
+        POP_BC,                     #   pop bc
+
+        JR_Z,   "@checkNextByte",   #   jr z,@checkNextByte
+            # select a random byte and bit in the masks to start with
+            # and cycle through them until we find a ring we don't have
+            CALL, GET_RANDOM_NUMBER,#     call getRandomNumber
+            # put the byte offset in e
+            LD_E_A,                 #     ld e,a
+            DEC_E,                  #     dec e
+
+            Label("@selectByteLoop"),
+            # get the rings obtained mask byte in b
+            INC_E,                  #     inc e
+            LD_A_E,                 #     ld a,e
+            AND,  0x07,             #     and $07
+            LD_E_A,                 #     ld e,a
+            ADD_A,                  #     add a
+            ADD_A,                  #     add a
+            ADD_A,                  #     add a
+            LD_HL,  RINGS_OBTAINED, #     ld hl,wRingsObtained
+            RST_10H,                #     rst_addAToHl
+            LD_B_HLP,               #     ld b,(hl)
+
+            # mask it with the obtained rings
+            LD_A_E,                 #     ld a,e
+            LD_HL,  RING_TIER_MASKS,#     ld hl,ringTierMasks
+            RST_10H,                #     rst_addAToHl
+            LD_A_HLP,               #     ld a,(hl)
+            OR_A,                   #     or a
+            JR_Z, "@selectByteLoop",#     jr z,@selectByteLoop
+            LD_A_B,                 #     ld a,b
+            CP_HLP,                 #     cp (hl)
+            JR_Z, "@selectByteLoop",#     jr z,@selectByteLoop
+
+            # found a byte with an unobtained ring. start with a random
+            # bit and cycle through them until we hit an unobtained ring
+            LD_D,       0,          #     ld d,$00
+            LD_A_E,                 #     ld a,e
+            ADD_A,                  #     add a
+            ADD_A,                  #     add a
+            ADD_A,                  #     add a
+            LD_E_A,                 #     ld e,a
+            LD_C_HLP,               #     ld c,(hl)
+            CALL, GET_RANDOM_NUMBER,#     call getRandomNumber
+            AND,  0x07,             #     and $07
+
+            # rotate mask and obtained bytes a random number of times
+            Label("@selectBitLoop"),
+            RRC_B,                  #     rrc b
+            RRC_C,                  #     rrc c
+            INC_D,                  #     inc d
+            DEC_A,                  #     dec a
+            JR_Z,  "@selectBitLoop",#     jr z,@selectBitLoop
+
+            # find the first bit with the mask set and the obtained unset
+            Label("@selectRingLoop"),
+            RRC_B,                  #     rrc b
+            RRC_C,                  #     rrc c
+            INC_D,                  #     inc d
+            BIT0_C,                 #     bit 0,c
+            JR_Z, "@selectRingLoop",#     jr z,@selectBitLoop
+            BIT0_B,                 #     bit 0,b
+            JR_NZ,"@selectRingLoop",#     jr nz,@selectBitLoop
+
+            # we're at a random bit in these bytes, so we need to
+            # make sure we don't increment outside the [0-7] range
+            LD_A_D,                 #     ld a,d
+            AND,  0x07,             #     and $07
+            OR_E,                   #     or e
+            LD_E_A,                 #     ld e,a
+            RET,                    #     ret
+
+        Label("@checkNextByte"),
+        LD_A_E,                     #   ld a,e
+        CP,         7,              #   cp $07
+        JR_NZ, "@tryGetNewRing",    #   jr nz,@tryGetNewRing
+
+        # that was the last byte, so we might have to try another tier
+        LD_A,       3,                  # ld a,$03
+        CP_C,                           # cp c
+        JR_Z, "@goToSecretTier",        # jr z,@goToSecretTier
+            JR_C, "@trySelectRing",     #   jr c,@trySelectRing
+                # this is the last tier, so we have to give up
+                JR, "@selectRandomRing",#     jr @selectRandomRing
+
+        Label("@goToSecretTier"),
+            # we can only increment to the final tier if we incremented
+            # through the other tiers(tier started as $00). otherwise we
+            # reset to the original tier, fall through, and select randomly
+            LD_A_D,                     #   ld a,d
+            OR_D,                       #   or d
+            JR_Z, "@trySelectRing",     #   jr z,@trySelectRing
+                LD_C_D,                 #     ld c,d
+
+    Label("@selectRandomRing"),
+    # get the tier table pointer
+    LD_A_C,                         # ld a,c
+    LD_HL,      RING_TIER_TABLE,    # ld hl,ringTierTable
+    RST_18H,                        # rst_addDoubleIndex
+    LDI_A_HLP,                      # ldi a,(hl)
+    LD_H_HLP,                       # ld h,(hl)
+    LD_L_A,                         # ld l,a
+
+    CALL,       GET_RANDOM_NUMBER,  # call getRandomNumber
+    # to simplify logic, the random number will only be in the range [0,254]
+    CP,         0xFF,               # cp $FF
+    LD_B_A,                         # ld b,a
+    JR_C, "@selectRingByWeight",    # jr nz,@selectRingByWeight
+    DEC_B,                          #   dec b
+
+    # loop through the rings in the tier until one of weighted
+    # offsets is greater than or equal to the random number.
+    Label("@selectRingByWeight"),
+    LDI_A_HLP,                      # ldi a,(hl)
+
+    # return if we hit the end of the table somehow
+    CP,         0xFF,               # cp $FF
+    RET_Z,                          # ret z
+
+    LD_E_A,                         # ld e,a
+    LDI_A_HLP,                      # ldi a,(hl)
+    CP_B,                           # cp b
+    JR_NC,   "@selectRingByWeight", # jr nc,@selectRingByWeight
+    RET,                            # ret
+    ]
 
 ORIG_DETERMINE_GASHA_DROP_ASM = [
     # Get a value of 0-4 in 'c', based on the range of
@@ -160,12 +410,12 @@ ORIG_DETERMINE_GASHA_DROP_ASM = [
     b'\xd7',                        # rst_addAToHl
 
     # a = c*10
-    b'\x79',                        # ld a,c
-    b'\x87',                        # add a
-    b'\x4f',                        # ld c,a
-    b'\x87',                        # add a
-    b'\x87',                        # add a
-    b'\x81',                        # add c
+    LD_A_C,                         # ld a,c
+    ADD_A,                          # add a
+    LD_C_A,                         # ld c,a
+    ADD_A,                          # add a
+    ADD_A,                          # add a
+    ADD_C,                          # add c
 
     b'\xd7',                        # rst_addAToHl
     # call getRandomIndexFromProbabilityDistribution
@@ -188,31 +438,34 @@ ORIG_DETERMINE_GASHA_DROP_ASM = [
 # NOTE: can put the extra code for the new function here
 #       in the space cleared of gashaTreasures
 ORIG_GET_GASHA_RING_TIER_ASM = [
-    b'\x78',                # ld a,b
+    LD_A_B,                 # ld a,b
     b'\x1e\x02',            # ld e,Interaction.subid
     b'\x12',                # ld (de),a
     b'\x21',GASHA_TREASURES,# ld hl,@gashaTreasures
-    b'\xdf',                # rst_addDoubleIndex
+    RST_18H,                # rst_addDoubleIndex
     b'\x2a',                # ldi a,(hl)
     b'\x4e',                # ld c,(hl)
     b'\x3e\x2d',            # ld a,TREASURE_RING
     b'\x20\x03',            # jr nz,+
     ]
 
+TIER_TABLE_START = 0x479C
 AGES_ORIG_RING_TIERS_TABLE_ASM = [
-    b'\x9c\x47', # .dw @tier0
-    b'\xa4\x47', # .dw @tier1
-    b'\xac\x47', # .dw @tier2
-    b'\xb4\x47', # .dw @tier3
-    b'\xbc\x47', # .dw @tier4
+    TIER_TABLE_START,       # .dw @tier0
+    TIER_TABLE_START + 8*1, # .dw @tier1
+    TIER_TABLE_START + 8*2, # .dw @tier2
+    TIER_TABLE_START + 8*3, # .dw @tier3
+    TIER_TABLE_START + 8*4, # .dw @tier4
     ]
+TIER_TABLE_START = 0x47BB
 SEAS_ORIG_RING_TIERS_TABLE_ASM = [
-    b'\xbb\x47', # .dw @tier0
-    b'\xc3\x47', # .dw @tier1
-    b'\xcb\x47', # .dw @tier2
-    b'\xd3\x47', # .dw @tier3
-    b'\xdb\x47', # .dw @tier4
+    TIER_TABLE_START,       # .dw @tier0
+    TIER_TABLE_START + 8*1, # .dw @tier1
+    TIER_TABLE_START + 8*2, # .dw @tier2
+    TIER_TABLE_START + 8*3, # .dw @tier3
+    TIER_TABLE_START + 8*4, # .dw @tier4
     ]
+del TIER_TABLE_START
 NEW_RING_TIERS_TABLE_ASM = [
     # NOTE: just so i don't have to go with the old confusing naming
     #       convention of tier 0 being the 2nd best and 4 being the
@@ -248,8 +501,8 @@ for ring_list in [
     total_weight = sum(ring_list[1::2])
     curr_cutoff  = 0
     for i, v in enumerate(ring_list[1::2]):
-        ring_list[i*2] = int(curr_cutoff)
-        curr_cutoff   += 255*(v/total_weight)
+        curr_cutoff     += 255.5*(v/total_weight)
+        ring_list[1+i*2] = int(curr_cutoff)
 
 
 RING_TIER_MASKS_ASM = list(

@@ -96,6 +96,10 @@ LOAD_OPCODES_8BIT.update(
     LDH_A8_A    = 0xE0,
     LDH_A_A8    = 0xF0,
 
+    # shorthands
+    LDH_A8      = 0xE0,
+    LDH_A       = 0xF0,
+
     LD_CP_A     = 0xE2,
     LD_A_CP     = 0xF2,
     )
@@ -116,6 +120,7 @@ LOAD_OPCODES_16BIT.update(
     LD_SP_HL    = 0xF9,
     ADD_SP_R8   = 0xE8,
     )
+SHORTHANDS.update(["LDH_A8", "LDH_A"])
 
 for i, r in enumerate(REGISTERS_8BIT):
     LOAD_OPCODES_8BIT.update({

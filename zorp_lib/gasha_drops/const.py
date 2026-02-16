@@ -2,6 +2,7 @@
 PATCH_BANKS = dict(
     GET_RANDOM_TIERED_RING  = 0,
 
+    GET_RANDOM_TIERED_RING1 = 63,
     RING_TIER_MASKS         = 63,
     RING_TIER_TABLE         = 63,
     RING_TIER0_TABLE        = 63,
@@ -9,6 +10,7 @@ PATCH_BANKS = dict(
     RING_TIER2_TABLE        = 63,
     RING_TIER3_TABLE        = 63,
     RING_TIER4_TABLE        = 63,
+    GASHA_MATURITY_TABLE    = 63,
     )
 AGES_PATCH_BANKS = dict()
 SEAS_PATCH_BANKS = dict()
