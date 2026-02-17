@@ -9,6 +9,8 @@ def prepare_alchemy_ring_patches(
         alchemy_bomb_cost=RUPEEVAL_005,
         alchemy_bombchu_cost=RUPEEVAL_050, **kw
         ):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     kw["replace_map"].update(
         ALCHEMY_COST_SEED       = util.to_bytes(alchemy_seed_cost),
         ALCHEMY_COST_BOMB       = util.to_bytes(alchemy_bomb_cost),
@@ -26,6 +28,4 @@ def prepare_alchemy_ring_patches(
         [ALCHEMY_RING1,     asm.NEW_ALCHEMY_RING1_ASM, asm.ORIG_ALCHEMY_RING1_ASM],
         [ALCHEMY_RING0,     asm.NEW_ALCHEMY_RING0_ASM, asm.ORIG_ALCHEMY_RING0_ASM],
         ]
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

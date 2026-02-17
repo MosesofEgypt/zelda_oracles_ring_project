@@ -5,6 +5,8 @@ from . import asm, const
 
 
 def prepare_victory_ring_patches(**kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     patch_data = [
         [VICTORY_RING8,     asm.VICTORY_RING8_ASM],
         [VICTORY_RING5,     asm.VICTORY_RING5_ASM],
@@ -17,6 +19,4 @@ def prepare_victory_ring_patches(**kw):
         [VICTORY_RING0,     asm.NEW_VICTORY_RING0_ASM,     asm.ORIG_VICTORY_RING0_ASM],
         [VICTORY_RING_ICON, asm.NEW_VICTORY_RING_ICON_ASM, asm.ORIG_VICTORY_RING_ICON_ASM],
         ]
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

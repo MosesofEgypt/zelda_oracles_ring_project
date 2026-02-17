@@ -5,6 +5,8 @@ from . import asm, const
 
 
 def prepare_ring_text_patches(**kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     rom_file = kw["rom_file"]
     ring_text_data, ring_off_table = compress_ring_text(
         read_text_dicts(**kw), kw.get("text_overrides", {})
@@ -34,8 +36,6 @@ def prepare_ring_text_patches(**kw):
 
     patch_data  = []
 
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     if len(ring_text_data) > max_text_size:
         print("\tFailure preparing ring text update.\n"
               "\t\tPatch data is %i bytes too large to fit." %

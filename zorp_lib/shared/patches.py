@@ -5,6 +5,8 @@ from . import asm, const
 
 
 def prepare_shared_patches(*, ring_stacking=True, atk_def_stacking=2, **kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     new_active_ring1_asm = (
         asm.NEW_CP_ACTIVE_RING1_BUFFED1_ASM  if atk_def_stacking > 1 else
         asm.NEW_CP_ACTIVE_RING1_BUFFED0_ASM  if atk_def_stacking > 0 else
@@ -22,6 +24,4 @@ def prepare_shared_patches(*, ring_stacking=True, atk_def_stacking=2, **kw):
         [EITHER_RING,             asm.EITHER_RING_ASM],
         [REMOVE_RING,             asm.REMOVE_RING_ASM],
         ]
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

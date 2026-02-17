@@ -5,6 +5,8 @@ from . import asm, const
 
 
 def prepare_mystic_seed_ring_patches(**kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     patch_data = [
         [MYSTIC_SEED_RING_ICON, asm.NEW_MYSTIC_SEED_RING_ICON_ASM, asm.ORIG_MYSTIC_SEED_RING_ICON_ASM],
         [MYSTIC_SEED_RING9,     asm.MYSTIC_SEED_RING9_ASM],
@@ -30,6 +32,4 @@ def prepare_mystic_seed_ring_patches(**kw):
             [MYSTIC_SEED_RING1, asm.SEAS_MYSTIC_SEED_RING1_ASM],
             [MYSTIC_SEED_RING0, asm.SEAS_NEW_MYSTIC_SEED_RING0_ASM, asm.SEAS_ORIG_MYSTIC_SEED_RING0_ASM],
             ])
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

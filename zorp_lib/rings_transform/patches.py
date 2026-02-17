@@ -5,6 +5,8 @@ from . import asm, const
 
 
 def prepare_transform_ring_patches(**kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     patch_data = [
         [GET_CAN_REMAP_SPRITE,    asm.GET_CAN_REMAP_SPRITE_ASM],
         [REMAP_XFORM_LINK,        asm.REMAP_XFORM_LINK_ASM],
@@ -15,6 +17,4 @@ def prepare_transform_ring_patches(**kw):
         [GET_XFORM_LINK_ID_CALL1, asm.NEW_GET_XFORM_LINK_ID_CALL1_ASM, asm.ORIG_GET_XFORM_LINK_ID_CALL1_ASM],
         [GET_XFORM_LINK_ID_CALL0, asm.NEW_GET_XFORM_LINK_ID_CALL0_ASM, asm.ORIG_GET_XFORM_LINK_ID_CALL0_ASM],
         ]
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

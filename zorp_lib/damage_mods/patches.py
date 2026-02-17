@@ -11,6 +11,8 @@ def prepare_damage_modifier_patches(
         gold_ring_heart_cutoff=4.0, curse_ring_heart_max=4.0,
         **kw
         ):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
 
     red_ring_atk_mod            = max(0, min(3, red_ring_atk_mod))
     green_ring_atk_mod          = max(0, min(3, green_ring_atk_mod))
@@ -91,6 +93,4 @@ def prepare_damage_modifier_patches(
         [DBL_EDGE_RING,         asm.NEW_DBL_EDGE_RING_ASM,         asm.ORIG_DBL_EDGE_RING_ASM],
         [SWORD_DAMAGE,          new_sword_damage_asm,              asm.ORIG_SWORD_DAMAGE_ASM],
         ]
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

@@ -4,6 +4,8 @@ from . import asm, const
 
 
 def prepare_color_ring_patches(**kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     patch_data = [
         [GBOY_COLOR_RING_ICON,  asm.NEW_GBOY_COLOR_RING_ICON_ASM,  asm.ORIG_GBOY_COLOR_RING_ICON_ASM],
         [RUPEE_RING_ICON,       asm.NEW_RUPEE_RING_ICON_ASM,       asm.ORIG_RUPEE_RING_ICON_ASM],
@@ -30,6 +32,4 @@ def prepare_color_ring_patches(**kw):
         [RING_PALETTE0, asm.NEW_RING_PALETTE0_ASM, asm.ORIG_RING_PALETTE0_ASM],
         ])
 
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

@@ -9,6 +9,8 @@ def prepare_box_size_patches(
         portal_box_level=3,
         **kw
         ):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     # I'm capping these to 9 since i don't wanna fuck with rewriting the
     # text to support an additional char for "10"
     box_size_l1     = min(9, max(0, box_size_l1))
@@ -183,11 +185,11 @@ def prepare_box_size_patches(
         [BOX_CAPACITY1, new_box_capacity1_asm, asm.ORIG_BOX_CAPACITY1_ASM],
         [BOX_CAPACITY0, new_box_capacity0_asm, asm.ORIG_BOX_CAPACITY0_ASM],
         ]
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]
 
 def prepare_ring_list_reorg_patches(**kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     patch_data = [
         [RING_MAP_TABLE,           asm.RING_MAP_TABLE_ASM],
         [GET_SELECTED_RING1,       asm.GET_SELECTED_RING1_ASM],
@@ -223,15 +225,13 @@ def prepare_ring_list_reorg_patches(**kw):
         [DRAW_EQUIP0,              asm.NEW_DRAW_EQUIP0_ASM,               asm.ORIG_DRAW_EQUIP0_ASM],
         [DRAW_EQUIP2,              asm.NEW_DRAW_EQUIP2_ASM,               asm.ORIG_DRAW_EQUIP2_ASM],
         ]
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]
 
 def prepare_box_menu_patches(**kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     patch_data = [
         [RING_BOX_MENU1, asm.RING_BOX_MENU1_ASM],
         [RING_BOX_MENU0, asm.NEW_RING_BOX_MENU0_ASM, asm.ORIG_RING_BOX_MENU0_ASM],
         ]
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

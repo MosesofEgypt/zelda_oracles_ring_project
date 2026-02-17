@@ -4,6 +4,8 @@ from .. import util
 from . import asm, const
 
 def prepare_combo_bombs_patches(**kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     patch_data = [
         [MINING_BOMB4, asm.MINING_BOMB4_ASM],
         [MINING_BOMB3, asm.MINING_BOMB3_ASM],
@@ -15,6 +17,4 @@ def prepare_combo_bombs_patches(**kw):
         [REMOTE_BOMB2, asm.NEW_REMOTE_BOMB2_ASM, asm.ORIG_REMOTE_BOMB2_ASM],
         [REMOTE_BOMB0, asm.NEW_REMOTE_BOMB0_ASM, asm.ORIG_REMOTE_BOMB0_ASM],
         ]
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

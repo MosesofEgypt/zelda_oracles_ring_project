@@ -37,6 +37,8 @@ determine chance to guarantee new ring using gasha maturity
 '''
 
 def prepare_gasha_drop_patches(**kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     orig_ring_tiers_table_asm = (
         asm.AGES_ORIG_RING_TIERS_TABLE_ASM if kw.get("is_ages") else
         asm.SEAS_ORIG_RING_TIERS_TABLE_ASM
@@ -63,8 +65,6 @@ def prepare_gasha_drop_patches(**kw):
         [RING_TIER_MASKS,         asm.RING_TIER_MASKS_ASM,            asm.ORIG_RING_TIER_TABLES_ASM],
         [GASHA_MATURITY_TABLE,    asm.NEW_GASHA_MATURITY_TABLE_ASM,   orig_gasha_maturity_table_asm],
         ]
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     util.clear_rom_garbage(
         ages_garbage_map=const.AGES_BANK_GARBAGE,
         seas_garbage_map=const.SEAS_BANK_GARBAGE,

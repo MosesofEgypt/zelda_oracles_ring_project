@@ -8,6 +8,9 @@ def prepare_combo_sword_patches(
         super_spin_count=15, sword_beam_limit=2, super_beam_delay=50,
         light_ring_l1_cutoff=3.0, light_ring_l2_cutoff=6.0,
         **kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
+
     super_spin_count            = max(1, min(MAX_SPINS, super_spin_count))
     sword_beam_limit            = max(1, min(MAX_BEAMS, sword_beam_limit))
     super_beam_delay            = max(0, min(255,       super_beam_delay))
@@ -46,7 +49,4 @@ def prepare_combo_sword_patches(
         [SWORD_SPIN0,       asm.NEW_SWORD_SPIN0_ASM,      asm.ORIG_SWORD_SPIN0_ASM],
         [SWORD_SPIN2,       asm.NEW_SWORD_SPIN2_ASM,      asm.ORIG_SWORD_SPIN2_ASM],
         ]
-
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

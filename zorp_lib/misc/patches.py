@@ -5,6 +5,8 @@ from . import asm, const
 
 
 def prepare_misc_patches(**kw):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     patch_data = [
         #[TOSS_RING_TEST1, asm.TOSS_RING_TEST1_ASM],
         #[TOSS_RING_TEST0, asm.NEW_TOSS_RING_TEST0_ASM, asm.ORIG_TOSS_RING_TEST0_ASM],
@@ -30,6 +32,4 @@ def prepare_misc_patches(**kw):
     kw.get("is_ages") and patch_data.append(
         [SOMARIA_PRIO, asm.NEW_SOMARIA_PRIORITY_ASM, asm.ORIG_SOMARIA_PRIORITY_ASM]
         )
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]

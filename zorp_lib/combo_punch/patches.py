@@ -6,6 +6,8 @@ from . import asm, const
 def prepare_combo_punch_patches(
         *, ring_stacking=True, sword_beam_limit=2, **kw
         ):
+    util.update_patch_banks(const, **kw)
+    util.update_replace_map(const, **kw)
     sword_beam_limit    = max(1, min(MAX_BEAMS, sword_beam_limit))
 
     old_punch_check0_asm  = (
@@ -34,6 +36,4 @@ def prepare_combo_punch_patches(
             [SUPER_PUNCH3,  asm.SUPER_PUNCH3_ASM],
             ])
 
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
     return [util.alloc_patch(*args, **kw) for args in patch_data]
