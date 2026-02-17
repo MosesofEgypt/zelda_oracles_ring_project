@@ -1,5 +1,6 @@
 from .const import *
 from ..const import *
+from ..opcodes import *
 from ..shared.const import *
 
 ORIG_MINING_BOMB0_ASM = [
@@ -146,6 +147,7 @@ REMOTE_BOMB1_ASM = [
     #       to add logic to @bombUpdateAnimation to handle the return there.
     b'\xf1',                          # pop af
     b'\xc9',                          # ret
+    b'\xcd',ITEM_ANIMATE,             # call itemAnimate
     # @notRemote
     b'\x01',HASTE_RING,BOMBPROOF_RING,# ld bc,BOMBPROOF_RING,HASTE_RING
     b'\xcd',EITHER_RING,              # call eitherRingActive
@@ -153,11 +155,10 @@ REMOTE_BOMB1_ASM = [
     b'\x30\x06',                      # jr nc,@done
     # force immediate explosion
     b'\x2e\x2f',                      # ld l,Item.var2f
-    b'\xcb\xe6',                      # set 4,(hl)
+    SET4_HLP,                         # set 4,(hl)
     b'\xf1',                          # pop af
     b'\x1f',                          # rra
     # @done
-    b'\xcd',ITEM_ANIMATE,             # call itemAnimate
     b'\xc9',                          # ret
     ]
 
