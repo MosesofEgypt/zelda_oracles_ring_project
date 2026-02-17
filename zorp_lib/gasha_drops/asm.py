@@ -169,13 +169,9 @@ NEW_GET_RANDOM_TIERED_RING_ASM = [
     SET_ROM_BANK,                   # setrombank
 
     # put the new-ring-chance into b as a value in the range 0x0F - 0xFF
-    #LD_A_C,                         # ld a,c
-    #OR,         0x0F,               # or $0f
-    #LD_B_A,                         # ld b,a
-    # TEST CODE
-    LD_C,       0xF0,               # ld c,$F0
-    LD_B,       0xFF,               # ld b,$FF
-    # TEST CODE
+    LD_A_C,                         # ld a,c
+    OR,         0x0F,               # or $0f
+    LD_B_A,                         # ld b,a
 
     # put the ring tier into c as a value in the range 0x00 - 0x04
     LD_A_C,                         # ld a,c
@@ -208,37 +204,6 @@ NEW_GET_RANDOM_TIERED_RING_ASM = [
     RET,                            # ret
     ]
 
-GET_RING_TIER_MASK_ASM = [
-    # @param        c       Ring tier
-    # @param        e       Byte offset[0-7]
-    # @param[out]   a       Ring tier byte mask
-
-    # the masks table has a stride of 8, so we need to
-    # multiply the tier by 8 to get our starting offset
-    LD_A_C,                     # ld a,c
-    ADD_A,                      # add a
-    ADD_A,                      # add a
-    ADD_A,                      # add a
-    ADD_E,                      # add e
-    LD_HL,      RING_TIER_MASKS,# ld hl,ringTierMasks
-    RST_10H,                    # rst_addAToHl
-    LD_A_HLP,                   # ld a,(hl)
-    RET,                        # ret
-    ]
-
-GET_RINGS_OBTAINED_ASM = [
-    # @param        e       Byte offset[0-7]
-    # @param[out]   a       Rings-obtained byte
-
-    # the masks table has a stride of 8, so we need to
-    # multiply the tier by 8 to get our starting offset
-    LD_A_E,                     # ld a,e
-    LD_HL,      RINGS_OBTAINED, # ld hl,wRingsObtained
-    RST_10H,                    # rst_addAToHl
-    LD_A_HLP,                   # ld a,(hl)
-    RET,                        # ret
-    ]
-
 GET_RANDOM_TIERED_RING1_ASM = [
     # @param        b       New-ring chance
     # @param        c       Ring tier - 1(for incrementing)
@@ -248,7 +213,7 @@ GET_RANDOM_TIERED_RING1_ASM = [
     # cant guarantee new secret-tier rings
     LD_A_D,                         # ld a,d
     CP,             4,              # cp $04
-    JR_NC,  "@interimJump",         # jr nc,@interimJump
+    JR_NC,  "@selectRandomRing",    # jr nc,@selectRandomRing
 
     # check whether or not we're going to guarantee the ring is new
     Label("@trySelectNewRing"),
@@ -257,7 +222,6 @@ GET_RANDOM_TIERED_RING1_ASM = [
     CP_B,                           # cp b
 
     # select a random ring if the guaranteed-new chance wasn't hit
-    Label("@interimJump"),
     JR_NC,  "@selectRandomRing",    # jr nc,@selectRandomRing
         # use e as a counter to increment through the bytes
         XOR_A,                      #   xor a
@@ -359,7 +323,7 @@ GET_RANDOM_TIERED_RING1_ASM = [
         LD_A,       3,                  # ld a,$03
         CP_C,                           # cp c
         JR_Z, "@maybeGoToSecretTier",   # jr z,@maybeGoToSecretTier
-            JR_C, "@trySelectNewRing",  #   jr c,@trySelectNewRing
+            JR_NC, "@trySelectNewRing", #   jr nc,@trySelectNewRing
                 # reset to the original tier and select randomly
                 LD_C_D,                 #     ld c,d
                 JR, "@selectRandomRing",#     jr @selectRandomRing
@@ -369,9 +333,12 @@ GET_RANDOM_TIERED_RING1_ASM = [
             # went through the other tiers, starting with 0
             LD_A_D,                     #   ld a,d
             OR_D,                       #   or d
-            JR_Z, "@selectRandomRing",  #   jr z,@selectRandomRing
-                # reset to the original tier, fall through, and select randomly
-                LD_C_D,                 #     ld c,d
+
+            # reset to the original tier
+            LD_C_D,                     #   ld c,d
+            JR_NZ, "@selectRandomRing", #   jr nz,@selectRandomRing
+                # go to secret tier, fall through, and select randomly
+                LD_C,       4,          #     ld c,$04
 
     Label("@selectRandomRing"),
     # get the tier table pointer
@@ -403,6 +370,37 @@ GET_RANDOM_TIERED_RING1_ASM = [
     CP_B,                           # cp b
     RET_NC,                         # ret nc
     JR,     "@selectRingByWeight",  # jr @selectRingByWeight
+    ]
+
+GET_RING_TIER_MASK_ASM = [
+    # @param        c       Ring tier
+    # @param        e       Byte offset[0-7]
+    # @param[out]   a       Ring tier byte mask
+
+    # the masks table has a stride of 8, so we need to
+    # multiply the tier by 8 to get our starting offset
+    LD_A_C,                     # ld a,c
+    ADD_A,                      # add a
+    ADD_A,                      # add a
+    ADD_A,                      # add a
+    ADD_E,                      # add e
+    LD_HL,      RING_TIER_MASKS,# ld hl,ringTierMasks
+    RST_10H,                    # rst_addAToHl
+    LD_A_HLP,                   # ld a,(hl)
+    RET,                        # ret
+    ]
+
+GET_RINGS_OBTAINED_ASM = [
+    # @param        e       Byte offset[0-7]
+    # @param[out]   a       Rings-obtained byte
+
+    # the masks table has a stride of 8, so we need to
+    # multiply the tier by 8 to get our starting offset
+    LD_A_E,                     # ld a,e
+    LD_HL,      RINGS_OBTAINED, # ld hl,wRingsObtained
+    RST_10H,                    # rst_addAToHl
+    LD_A_HLP,                   # ld a,(hl)
+    RET,                        # ret
     ]
 
 ORIG_DETERMINE_GASHA_DROP_ASM = [

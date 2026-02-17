@@ -65,7 +65,7 @@ def prepare_gasha_drop_patches(**kw):
         [RING_TIER_MASKS,         asm.RING_TIER_MASKS_ASM,            asm.ORIG_RING_TIER_TABLES_ASM],
         [GASHA_MATURITY_TABLE,    asm.NEW_GASHA_MATURITY_TABLE_ASM,   orig_gasha_maturity_table_asm],
         ]
-    util.clear_rom_garbage(
+    0 and util.clear_rom_garbage(
         ages_garbage_map=const.AGES_BANK_GARBAGE,
         seas_garbage_map=const.SEAS_BANK_GARBAGE,
         **kw
