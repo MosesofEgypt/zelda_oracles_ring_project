@@ -208,8 +208,38 @@ NEW_GET_RANDOM_TIERED_RING_ASM = [
     RET,                            # ret
     ]
 
+GET_RING_TIER_MASK_ASM = [
+    # @param        c       Ring tier
+    # @param        e       Byte offset[0-7]
+    # @param[out]   a       Ring tier byte mask
+
+    # the masks table has a stride of 8, so we need to
+    # multiply the tier by 8 to get our starting offset
+    LD_A_C,                     # ld a,c
+    ADD_A,                      # add a
+    ADD_A,                      # add a
+    ADD_A,                      # add a
+    ADD_E,                      # add e
+    LD_HL,      RING_TIER_MASKS,# ld hl,ringTierMasks
+    RST_10H,                    # rst_addAToHl
+    LD_A_HLP,                   # ld a,(hl)
+    RET,                        # ret
+    ]
+
+GET_RINGS_OBTAINED_ASM = [
+    # @param        e       Byte offset[0-7]
+    # @param[out]   a       Rings-obtained byte
+
+    # the masks table has a stride of 8, so we need to
+    # multiply the tier by 8 to get our starting offset
+    LD_A_E,                     # ld a,e
+    LD_HL,      RINGS_OBTAINED, # ld hl,wRingsObtained
+    RST_10H,                    # rst_addAToHl
+    LD_A_HLP,                   # ld a,(hl)
+    RET,                        # ret
+    ]
+
 GET_RANDOM_TIERED_RING1_ASM = [
-    # getRandomRingOfGivenTier:
     # @param        b       New-ring chance
     # @param        c       Ring tier - 1(for incrementing)
     # @param        d       Ring tier(for checking if secret tier is accessible)
@@ -237,24 +267,13 @@ GET_RANDOM_TIERED_RING1_ASM = [
         Label("@tryGetNewRing"),
         PUSH_BC,                    #   push bc
         INC_E,                      #   inc e
-        # the masks table has a stride of 8, so we need to
-        # multiply the tier by 8 to get our starting offset
-        LD_A_C,                     #   ld a,c
-        ADD_A,                      #   add a
-        ADD_A,                      #   add a
-        ADD_A,                      #   add a
-        ADD_E,                      #   add e
 
-        LD_HL,      RING_TIER_MASKS,#   ld hl,ringTierMasks
-        RST_10H,                    #   rst_addAToHl
         # get the rings obtained mask byte in b
-        LD_B_HLP,                   #   ld b,(hl)
+        CALL, GET_RING_TIER_MASK,   #   call getRingTierMask
+        LD_B_A,                     #   ld b,a
 
-        LD_A_E,                     #   ld a,e
-        LD_HL,      RINGS_OBTAINED, #   ld hl,wRingsObtained
-        RST_10H,                    #   rst_addAToHl
         # get the rings obtained byte in a
-        LD_A_HLP,                   #   ld a,(hl)
+        CALL, GET_RINGS_OBTAINED,   #   call getRingsObtained
 
         # if the masked obtained rings byte equals the mask then we have all
         # rings under this mask. need to increment to checking the next byte
@@ -276,19 +295,11 @@ GET_RANDOM_TIERED_RING1_ASM = [
             LD_A_E,                 #     ld a,e
             AND,  0x07,             #     and $07
             LD_E_A,                 #     ld e,a
-            LD_HL,  RINGS_OBTAINED, #     ld hl,wRingsObtained
-            RST_10H,                #     rst_addAToHl
-            LD_B_HLP,               #     ld b,(hl)
+            CALL,GET_RINGS_OBTAINED,#     call getRingsObtained
+            LD_B_A,                 #     ld b,a
 
             # mask it with the obtained rings
-            LD_A_C,                 #     ld a,c
-            ADD_A,                  #     add a
-            ADD_A,                  #     add a
-            ADD_A,                  #     add a
-            ADD_E,                  #     add e
-            LD_HL,  RING_TIER_MASKS,#     ld hl,ringTierMasks
-            RST_10H,                #     rst_addAToHl
-            LD_A_HLP,               #     ld a,(hl)
+            CALL,GET_RING_TIER_MASK,#     call getRingTierMask
             OR_A,                   #     or a
             # mask must contain some rings
             JR_Z, "@selectByteLoop",#     jr z,@selectByteLoop
@@ -303,14 +314,15 @@ GET_RANDOM_TIERED_RING1_ASM = [
             LD_D,       0,          #     ld d,$00
             LD_C_HLP,               #     ld c,(hl)
 
-            # multiply e by 8 since it's the high bits of the ring index
+            # since e will contain the final ring index, we need to multiply
+            # it by 8 to convert it from a byte offset into an index offset
             LD_A_E,                 #     ld a,e
             ADD_A,                  #     add a
             ADD_A,                  #     add a
             ADD_A,                  #     add a
             LD_E_A,                 #     ld e,a
             CALL, GET_RANDOM_NUMBER,#     call getRandomNumber
-            AND,  0x07,             #     and $07
+            AND,    0x07,           #     and $07
 
             # rotate mask and obtained bytes a random number of times
             Label("@selectBitLoop"),

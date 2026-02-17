@@ -120,10 +120,11 @@ NEW_ARMOR_RING0_ASM    = [
     b'\x30\x02',                        #   jr nc,@capToMinDamage
     b'\xd6',GOLD_RING_DEF_MOD,          #     sub GOLD_RING_DEF_MOD
     b'\x90',                            # sub b
+
     # @capToMinDamage
     # what we're doing is a bit complicated, but essentially we want
-    # to ensure the minimum damage multiplier is 3/8. because flags
-    # get screwy if things go below 0, we added 0x40 to keep it
+    # to ensure the minimum damage multiplier is 3/8. because math
+    # get complex if things go below 0, we added 0x40 to keep it
     # above, so now we need to subtract it
     b'\xd6',MAX_DEF_MOD0,               # sub MAX_DEF_MOD0
     b'\x30\x02',                        # jr nc,@applyMultipliers

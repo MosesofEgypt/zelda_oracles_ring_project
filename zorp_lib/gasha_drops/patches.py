@@ -55,6 +55,8 @@ def prepare_gasha_drop_patches(**kw):
         [RING_TIER2_TABLE,        asm.RING_TIER2_TABLE_ASM],
         [RING_TIER1_TABLE,        asm.RING_TIER1_TABLE_ASM],
         [RING_TIER0_TABLE,        asm.RING_TIER0_TABLE_ASM],
+        [GET_RING_TIER_MASK,      asm.GET_RING_TIER_MASK_ASM],
+        [GET_RINGS_OBTAINED,      asm.GET_RINGS_OBTAINED_ASM],
         [GET_RANDOM_TIERED_RING1, asm.GET_RANDOM_TIERED_RING1_ASM],
         [RING_TIER_TABLE,         asm.NEW_RING_TIERS_TABLE_ASM,       orig_ring_tiers_table_asm],
         [GET_RANDOM_TIERED_RING,  asm.NEW_GET_RANDOM_TIERED_RING_ASM, asm.ORIG_GET_RANDOM_TIERED_RING_ASM],

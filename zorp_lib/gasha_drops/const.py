@@ -11,6 +11,8 @@ PATCH_BANKS = dict(
     RING_TIER3_TABLE        = 63,
     RING_TIER4_TABLE        = 63,
     GASHA_MATURITY_TABLE    = 63,
+    GET_RING_TIER_MASK      = 63,
+    GET_RINGS_OBTAINED      = 63,
     )
 AGES_PATCH_BANKS = dict()
 SEAS_PATCH_BANKS = dict()
