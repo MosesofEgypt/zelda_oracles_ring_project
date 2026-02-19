@@ -65,7 +65,7 @@ NEW_ALCHEMY_RING3_ASM = list(ORIG_ALCHEMY_RING3_ASM)
 NEW_ALCHEMY_RING4_ASM = list(ORIG_ALCHEMY_RING4_ASM)
 NEW_ALCHEMY_RING2_ASM[-3:-1] = [ b'\xcd', ALCHEMY_RING5 ]
 NEW_ALCHEMY_RING3_ASM[-3:-1] = [ b'\xcd', ALCHEMY_RING6 ]
-NEW_ALCHEMY_RING4_ASM[-4:-1] = [ b'\xc3', ALCHEMY_RING7 ]
+NEW_ALCHEMY_RING4_ASM[-5:-2] = [ b'\xc3', ALCHEMY_RING7 ]
 
 
 # NOTE: need to apply the new ammo count otherwise the game will
