@@ -55,7 +55,7 @@ SEAS_PATCH_BANKS = dict(
     )
 
 REPLACE_MAP = dict(
-    PORTAL_BOX_LEVEL            = util.to_bytes(4),
+    PORTAL_BOX_LEVEL            = util.to_bytes(3),
     )
 
 PADDING_REPLACE_MAP  = {

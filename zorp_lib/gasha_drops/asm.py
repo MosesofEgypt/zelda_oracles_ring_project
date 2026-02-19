@@ -206,15 +206,55 @@ NEW_GET_RANDOM_TIERED_RING_ASM = [
 
 GET_RANDOM_TIERED_RING1_ASM = [
     # @param        b       New-ring chance
-    # @param        c       Ring tier - 1(for incrementing)
-    # @param        d       Ring tier(for checking if secret tier is accessible)
+    # @param        d       Ring tier
     # @param[out]   e       Randomly chosen ring from the given tier
 
+    PUSH_BC,                        # push bc
+    # to make it easier to get the highest tier ring, we'll bump
+    # from tier0 to tier4 if all other tiers have been collected
+    LD_A_D,                         # ld a,d
+    OR_A,                           # or a
+    JR_NZ,  "@checkIsTier4",        # jr nz,@checkIsTier4
+        # use e as a counter to increment through the bytes
+        LD_E,       7,              #   ld e,7
+
+        Label("@checkCollected"),
+        LD_BC,      3,  0,          #   ld bc,0,3
+
+        Label("@combineMasks"),
+        # get the rings obtained mask byte in b
+        CALL, GET_RING_TIER_MASK,   #   call getRingTierMask
+        OR_B,                       #   or b
+        LD_B_A,                     #   ld b,a
+        DEC_C,                      #   dec c
+        LD_A_C,                     #   ld a,c
+        CP,         0xFF,           #   cp $FF
+        JR_NZ,  "@combineMasks",    #   jr nz,@combineMasks
+
+        # get the rings obtained byte in a
+        CALL, GET_RINGS_OBTAINED,   #   call getRingsObtained
+        AND_B,                      #   and b
+        CP_B,                       #   cp b
+        # if the masked obtained rings doesn't equal the
+        # mask, then we don't have all tier 0-3 rings
+        JR_NZ,  "@checkIsTier4",    #   jr nz,@checkIsTier4
+        DEC_E,                      #   dec e
+        LD_A_E,                     #   ld a,e
+        CP,         0xFF,           #   cp $FF
+        JR_NZ,  "@checkCollected",  #   jr nz,@checkIsTier4
+
+    # increment to the secret ring tier
+    LD_D,           4,              # ld d,4
+
     # cant guarantee new secret-tier rings
+    Label("@checkIsTier4"),
+    POP_BC,                         # pop bc
+    LD_C_D,                         # ld c,d
     LD_A_D,                         # ld a,d
     CP,             4,              # cp $04
     JR_NC,  "@selectRandomRing",    # jr nc,@selectRandomRing
 
+    DEC_C,                          # dec c
     # check whether or not we're going to guarantee the ring is new
     Label("@trySelectNewRing"),
     INC_C,                          # inc c
@@ -368,7 +408,7 @@ GET_RANDOM_TIERED_RING1_ASM = [
     LD_E_A,                         # ld e,a
     LDI_A_HLP,                      # ldi a,(hl)
     CP_B,                           # cp b
-    RET_NC,                         # ret nc
+    RET_C,                          # ret c
     JR,     "@selectRingByWeight",  # jr @selectRingByWeight
     ]
 

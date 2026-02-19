@@ -4,26 +4,30 @@ from .. import util
 from . import asm, const
 
 
-def prepare_box_size_patches(
-        box_size_l1=3, box_size_l2=5, box_size_l3_add=5,
-        portal_box_level=3,
-        **kw
-        ):
+def update_mappings(portal_box_level=3, **kw):
     util.update_patch_banks(const, **kw)
     util.update_replace_map(const, **kw)
+
+    portal_box_level = min(4,  max(0, portal_box_level))
+    kw["replace_map"].update(
+        PORTAL_BOX_LEVEL = util.to_bytes(portal_box_level)
+        )
+
+def prepare_box_size_patches(
+        box_size_l1=3, box_size_l2=5, box_size_l3_add=5,
+        **kw
+        ):
+    update_mappings(**kw)
+    portal_box_level = kw["replace_map"][PORTAL_BOX_LEVEL][0]
+
     # I'm capping these to 9 since i don't wanna fuck with rewriting the
     # text to support an additional char for "10"
     box_size_l1     = min(9, max(0, box_size_l1))
     box_size_l2     = min(9, max(0, box_size_l2))
     box_size_l3_add = min(5, max(0, box_size_l3_add))
-    
-    portal_box_level = min(4,  max(0, portal_box_level))
-    offset_l1 = 3*(min(5, box_size_l1) + 1)
-    offset_l2 = 3*(min(5, box_size_l2) + 1)
 
-    kw["replace_map"].update({
-        PORTAL_BOX_LEVEL: util.to_bytes(portal_box_level)
-        })
+    offset_l1        = 3*(min(5, box_size_l1) + 1)
+    offset_l2        = 3*(min(5, box_size_l2) + 1)
 
     new_box_capacity0_asm = list(asm.ORIG_BOX_CAPACITY0_ASM)
     new_box_capacity1_asm = list(asm.ORIG_BOX_CAPACITY1_ASM)
@@ -188,8 +192,7 @@ def prepare_box_size_patches(
     return [util.alloc_patch(*args, **kw) for args in patch_data]
 
 def prepare_ring_list_reorg_patches(**kw):
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
+    update_mappings(**kw)
     patch_data = [
         [RING_MAP_TABLE,           asm.RING_MAP_TABLE_ASM],
         [GET_SELECTED_RING1,       asm.GET_SELECTED_RING1_ASM],
@@ -228,8 +231,7 @@ def prepare_ring_list_reorg_patches(**kw):
     return [util.alloc_patch(*args, **kw) for args in patch_data]
 
 def prepare_box_menu_patches(**kw):
-    util.update_patch_banks(const, **kw)
-    util.update_replace_map(const, **kw)
+    update_mappings(**kw)
     patch_data = [
         [RING_BOX_MENU1, asm.RING_BOX_MENU1_ASM],
         [RING_BOX_MENU0, asm.NEW_RING_BOX_MENU0_ASM, asm.ORIG_RING_BOX_MENU0_ASM],
