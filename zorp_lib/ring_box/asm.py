@@ -879,44 +879,50 @@ GET_RING_BOX_SPRITE_OFF1_ASM = [
     ]
 
 NEW_IS_RING_IN_BOX_ASM = [
-    b'\xc5',                    # push bc
-    b'\x21',W_BOX_CONTENTS,     # ld hl,wRingBoxContents
-    b'\xf5',                    # push af
-    b'\xcd',GET_BOX_CAPACITY,   # call getRingBoxCapacity
-    b'\x4f',                    # ld c,a
-    b'\x47',                    # ld b,a
-    b'\xf1',                    # pop af
+    PUSH_BC,                    # push bc
+    LD_B_A,                     # ld b,a
+    CALL,   GET_BOX_CAPACITY,   # call getRingBoxCapacity
+    LD_C_A,                     # ld c,a
+    XOR_A,                      # xor a
 
-    b'\xcd',IS_RING_IN_BOX1,    # call isRingInBox1
+    CALL,   IS_RING_IN_BOX1,    # call isRingInBox1
 
-    b'\x79',                    # ld a,c
-    b'\x90',                    # sub b
-    b'\xc1',                    # pop bc
-    b'\xc9',                    # ret
-    b'\x00'*2,                  # nop
+    POP_BC,                     # pop bc
+    SCF,                        # scf
+    CCF,                        # ccf
+    RET,                        # ret
+    b'\x00'*6
     ]
 IS_RING_IN_BOX1_ASM = [
-    # @nextRing:
-    b'\xf5',                    # push af
-    b'\x78',                    # ld a,b
-    b'\xfe\x05',                # cp $05
-    b'\x20\x03',                # jr nz,+
-    b'\x21',W_BOX_CONTENTS_EXT, #   ld hl,wRingBoxContentsExt
-    b'\xf1',                    # pop af
+    Label("@nextRing"),
+    PUSH_AF,                    # push af
+    CP,             5,          # cp $05
+    JR_C,       "else",         # jr c,else
+    LD_HL,  W_BOX_CONTENTS_EXT, #   ld hl,wRingBoxContentsExt
+        SUB,            5,      #   sub 5
+        JR,            "+",     #   jr +
+    Label("else"),
+        LD_HL,  W_BOX_CONTENTS, #   ld hl,wRingBoxContents
 
-    b'\xbe',                    # cp (hl)
-    b'\x28\x08',                # jr z,@foundRing
-    b'\x2c',                    #   inc l
-    b'\x05',                    #   dec b
-    b'\x20\xef',                #   jr nz,@nextRing
+    Label("+"),
+    RST_10H,                    # rst_addAToHl
+
+    LD_A_B,                     # ld a,b
+    CP_HLP,                     # cp (hl)
+    JR_Z,      "@foundRing",    # jr z,@foundRing
+    POP_AF,                     #   pop af
+    INC_A,                      #   inc a
+    CP_C,                       #   cp c
+    JR_NZ,      "@nextRing",    #   jr nz,@nextRing
     # intentional stack manipulation
-    b'\xc1',                    #     pop bc
-    b'\xc1',                    #     pop bc
-    b'\x37',                    #     scf
-    b'\xc9',                    #     ret
+    POP_BC,                     #     pop bc
+    POP_BC,                     #     pop bc
+    SCF,                        #     scf
+    RET,                        #     ret
 
-    # @foundRing:
-    b'\xc9',                    # ret
+    Label("@foundRing"),
+    POP_AF,                     # pop af
+    RET,                        # ret
     ]
 SEL_RING_FROM_LIST1_ASM = [
     b'\x21',W_BOX_CONTENTS,     # ld hl,wRingBoxContents
