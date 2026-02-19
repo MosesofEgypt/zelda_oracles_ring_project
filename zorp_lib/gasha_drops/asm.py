@@ -404,70 +404,177 @@ GET_RINGS_OBTAINED_ASM = [
     ]
 
 ORIG_DETERMINE_GASHA_DROP_ASM = [
-    # Get a value of 0-4 in 'c', based on the range of
-    # wGashaMaturity (0 = best prizes, 4 = worst prizes)
-    b'\x0e\x00',                    # ld c,$00
-    b'\x21',W_GASHA_MATURITY_H,     # ld hl,wGashaMaturity+1
-    b'\x3a',                        # ldd a,(hl)
-    b'\xcb\x3f',                    # srl a
-    b'\x20\x0c',                    # jr nz,++
-    b'\x7e',                        # ld a,(hl)
-    b'\x1f',                        # rra
-    b'\x21',GASHA_MATURITY_LEVELS,  # ld hl,@gashaMaturityValues
-    # --
-    b'\xbe',                        # cp (hl)
-    b'\x30\x04',                    # jr nc,++
-    b'\x23',                        # inc hl
-    b'\x0c',                        # inc c
-    b'\x18\xf9',                    # jr --
-    # ++
-    # Get the probability distribution to use, based on
-    # 'c' (above) and which gasha spot this is (var03)
-    b'\x1e\x03',                    # ld e,Interaction.var03
-    b'\x1a',                        # ld a,(de)
-    b'\x21',GASHA_SPOT_RANKS,       # ld hl,@gashaSpotRanks
-    b'\xd7',                        # rst_addAToHl
-    b'\x7e',                        # ld a,(hl)
-    b'\xd7',                        # rst_addAToHl
+    BIT0_HLP,                       # bit 0,(hl)
+    JR_NZ,          "+",            # jr nz,+
+    SET0_HLP,                       # set 0,(hl)
+    LD_B,           4,              # ld b,GASHATREASURE_TIER3_RING
+    JR, 0x5A,                       # jr @spawnTreasure
+    Label("+"),
 
-    # a = c*10
-    LD_A_C,                         # ld a,c
-    ADD_A,                          # add a
-    LD_C_A,                         # ld c,a
-    ADD_A,                          # add a
-    ADD_A,                          # add a
-    ADD_C,                          # add c
-
-    b'\xd7',                        # rst_addAToHl
-    # call getRandomIndexFromProbabilityDistribution
-
-    # If it would be a potion, but he has one already, just refill his health
-    b'\x78',                        # ld a,b
-    b'\xfe\x06',                    # cp GASHATREASURE_POTION
-    #b'\x20\x',                      # jr nz,@noPotion
-
-    b'\x3e',TREASURE_POTION,        # ld a,TREASURE_POTION
-    b'\xcd',CHECK_HAVE_TREASURE,    # call checkTreasureObtained
-    #b'\x30\x',                      # jr nc,@decGashaMaturity
-
-    
-    b'\x21',W_LINK_MAX_HEALTH,      # ld hl,wLinkMaxHealth
-    b'\x3a',                        # ldd a,(hl)
-    b'\x77',                        # ld (hl),a
+    LD_C,           0,              # ld c,$00
+    LD_HL,  W_GASHA_MATURITY_H,     # ld hl,wGashaMaturity+1
+    LDD_A_HLP,                      # ldd a,(hl)
+    SRL_A,                          # srl a
+    JR_NZ,          12,             # jr nz,++
+    LD_A_HLP,                       # ld a,(hl)
+    RRA,                            # rra
     ]
 
-# NOTE: can put the extra code for the new function here
-#       in the space cleared of gashaTreasures
-ORIG_GET_GASHA_RING_TIER_ASM = [
-    LD_A_B,                 # ld a,b
-    LD_E,       2,          # ld e,Interaction.subid
-    LD_DEP_A,               # ld (de),a
-    LD_HL,  GASHA_TREASURES,# ld hl,@gashaTreasures
-    RST_18H,                # rst_addDoubleIndex
-    LDI_A_HLP,              # ldi a,(hl)
-    LD_C_HLP,               # ld c,(hl)
-    LD_A,       0x2d,       # ld a,TREASURE_RING
-    JR_NZ,      3,          # jr nz,+
+NEW_DETERMINE_GASHA_DROP_ASM = [
+    # make the heart piece always spawn if it hasn't yet
+    BIT1_HLP,                       # bit 1,(hl)
+    JR_NZ,          "+",            # jr nz,+
+    SET1_HLP,                       # set 1,(hl)
+    LD_B,           0,              # ld b,GASHATREASURE_HEART_PIECE
+    JR, 0x5A,                       # jr @spawnTreasure
+    Label("+"),
+
+    # otherwise, spawn a ring with the tier dependent on kill count
+    LD_HL,  W_GASHA_KILL_COUNTERS,  # ld hl,wGashaSpotKillCounters
+    LD_E,           0x43,           # ld e,Interaction.var03
+    LD_A_DEP,                       # ld a,(de)
+    RST_10H,                        # rst_addAToHl
+    CALL, DETERMINE_RING_DROP_TIER, # call determineRingDropTier
+    # skip straight to decrementing and dropping the item
+    JR,             48,             # jr @decGashaMaturity
+    ]
+
+DETERMINE_RING_DROP_TIER_ASM = [
+    # start with the best guaranteed tier ring for the kill count
+    LD_B,       4,              # ld b,GASHATREASURE_TIER3_RING
+    LD_A_HLP,                   # ld a,(hl)
+
+    CP,  RING_TIER_3_MAX_KILLS, # cp a,ringTier3MaxKills
+    JR_C,  "@notTier3",         # jr c,@notTier3
+        DEC_B,                  #   dec b
+
+    Label("@notTier3"),
+    CP,  RING_TIER_2_MAX_KILLS, # cp a,ringTier2MaxKills
+    JR_C,  "@notTier2",         # jr c,@notTier2
+        DEC_B,                  #   dec b
+
+    Label("@notTier2"),
+    CP,  RING_TIER_1_MAX_KILLS, # cp a,ringTier1MaxKills
+    JR_C,  "@notTier1",         # jr c,@notTier1
+        DEC_B,                  #   dec b
+
+    # and now randomly move to better tiers if within range
+    Label("@notTier1"),
+    CP,  RING_TIER_2_MIN_KILLS, # cp a,ringTier2MinKills
+    JR_C,   "+",                # jr c,@notRandInc1
+        CALL,GET_RANDOM_NUMBER, #   call getRandomNumber
+        CP,     0x80,           #   cp $80
+        JR_C,   "+",            #   jr c,+
+            DEC_B,              #   dec b
+
+    Label("+"),
+    LD_A_HLP,                   # ld a,(hl)
+    CP,  RING_TIER_1_MIN_KILLS, # cp a,ringTier1MinKills
+    JR_C,   "++",               # jr c,@notRandInc2
+        CALL,GET_RANDOM_NUMBER, #   call getRandomNumber
+        CP,     0x80,           #   cp $80
+        JR_C,   "++",           #   jr c,+
+            DEC_B,              #   dec b
+
+    Label("++"),
+    LD_A_HLP,                   # ld a,(hl)
+    CP,  RING_TIER_0_MIN_KILLS, # cp a,ringTier0MinKills
+    JR_C,"@checkUnderflow",     # jr c,@done
+        CALL, GET_RANDOM_NUMBER,#   call getRandomNumber
+        CP,     0x80,           #   cp $80
+        JR_C,"@checkUnderflow", #   jr c,@done
+            DEC_B,              #     dec b
+
+    # ensure we didn't go too low
+    Label("@checkUnderflow"),
+    LD_A_B,                     # ld a,b
+    CP,         0x80,           # cp $80
+    JR_C,       "@checkZero",   # jr c,@next
+        LD_B,       1,          #   ld b,GASHATREASURE_TIER0_RING
+        RET,                    #   ret
+
+    Label("@checkZero"),
+    OR_A,                       # or a
+    RET_NZ,                     # ret nz
+    LD_B,       1,              # ld b,GASHATREASURE_TIER0_RING
+    RET,                        # ret
+    ]
+
+ORIG_DEC_GASHA_MATURITY_ASM = [
+    Label("@notPotion"),
+    CP,             0,          # cp GASHATREASURE_HEART_PIECE
+    JR_NZ,  "@decGashaMaturity",# jr nz,@decGashaMaturity
+    LD_HL,  W_GASHA_SPOT_FLAGS, # ld hl,wGashaSpotFlags
+    BIT1_HLP,                   # bit 1,(hl)
+    JR_Z,        "+",           # jr z,+
+    INC_B,                      # inc b
+    Label("+"),
+    SET1_HLP,                   # set 1,(hl)
+    Label("@decGashaMaturity"),
+    LD_HL,  W_GASHA_MATURITY,   # ld hl,wGashaMaturity
+    LD_A_HLP,                   # ld a,(hl)
+    SUB,        200,            # sub 200
+    LDI_HLP_A,                  # ldi (hl),a
+    LD_A_HLP,                   # ld a,(hl)
+    SBC,        0,              # sbc $00
+    ]
+
+NEW_DEC_GASHA_MATURITY_ASM = [
+    Label("@decGashaMaturity"),
+    # subtract ~25% from wGashaMaturity(we're ignoring the lower byte
+    # and just zeroing it, so the subtraction could be more or less)
+    LD_HL,  W_GASHA_MATURITY_H, # ld hl,wGashaMaturity+1
+    LD_A_HLP,                   # ld a,(hl)
+    LD_E_A,                     # ld e,a
+    SRL_A,                      # srl a
+    SRL_A,                      # srl a
+    LD_C_A,                     # ld c,a
+    LD_A_E,                     # ld a,e
+    SUB_C,                      # sub c
+    LDD_HLP_A,                  # ldd (hl),a
+    LD_HLP,         0,          # ld (hl),$00
+    *([NOP]*9),
+    ]
+
+ORIG_SPAWN_GASHA_TREASURE_ASM = [
+    RST_18H,                        # rst_addDoubleIndex
+    LDI_A_HLP,                      # ldi a,(hl)
+    LD_C_HLP,                       # ld c,(hl)
+    CP,         0x2d,               # cp TREASURE_RING
+    JR_NZ,       "+",               # jr nz,+
+    CALL,   GET_RANDOM_TIERED_RING, # call getRandomRingOfGivenTier
+    Label("+"),
+    LD_B_A,                         # ld b,a
+    CALL,                           # call ???
+    ]
+
+NEW_SPAWN_GASHA_TREASURE_ASM = [
+    CP,            0,                 # cp GASHATREASURE_HEART_PIECE
+    JR_Z,        "+",                 # jr z,+
+    CALL,   GET_RING_TIER_AND_CHANCE, # call getRingTierAndChance
+    CALL,   GET_RANDOM_TIERED_RING,   # call getRandomRingOfGivenTier
+    Label("+"),
+    LD_B_A,                           # ld b,a
+    CALL,                             # call ???
+    ]
+
+GET_RING_TIER_AND_CHANCE_ASM = [
+    # convert ring tier from GASHATREASURE into TREASURE
+    DEC_A,                      # dec a
+    LD_B_A,                     # ld b,a
+    LD_HL,  W_GASHA_MATURITY_H, # ld hl,wGashaMaturity+1
+    LD_A_HLP,                   # ld a,(hl)
+    # use the lower 4 bits of the high byte of gasha
+    # maturity as the chance to guarantee a new ring
+    CP,             0x10,       # cp $10
+    JR_C,            "+",       # jr c,+
+    LD_A,           0xFF,       # ld a,$FF
+    Label("+"),
+    AND,            0x0F,       # and $0F
+    SWAP_A,                     # swap a
+    OR_B,                       # or a,b
+    LD_C_A,                     # ld c,a
+    RET,                        # ret
     ]
 
 TIER_TABLE_START = 0x479C
@@ -493,6 +600,30 @@ NEW_RING_TIERS_TABLE_ASM = [
     RING_TIER2_TABLE,
     RING_TIER3_TABLE,
     RING_TIER4_TABLE,
+    ]
+
+ORIG_GASHA_MATURITY_LEVELS_ASM = [
+    # @gashaMaturityValues:
+    150,                # .db 300/2
+    100,                # .db 200/2
+    60,                 # .db 120/2
+    20,                 # .db  40/2
+    0,                  # .db   0/2
+    # @gashaTreasures:
+    0x2B,           1,  # .db TREASURE_HEART_PIECE, $01
+    0x2D,           0,  # .db TREASURE_RING, RING_TIER_0
+    0x2D,           1,  # .db TREASURE_RING, RING_TIER_1
+    0x2D,           2,  # .db TREASURE_RING, RING_TIER_2
+    0x2D,           3,  # .db TREASURE_RING, RING_TIER_3
+    0x2D,           4,  # .db TREASURE_RING, RING_TIER_4
+    0x2F,           1,  # .db TREASURE_POTION, $01
+    0x28, RUPEEVAL_200, # .db TREASURE_RUPEES, RUPEEVAL_200
+    0x29,         0x18, # .db TREASURE_HEART_REFILL, $18
+    0x29,         0x14, # .db TREASURE_HEART_REFILL, $14
+    # this is padding that will have been written by a call
+    # to clear_rom_garbage. we'll essentially be using this
+    # space for any new bank 10/11 code we'll be adding
+    b'\x00' * GASHA_SPOT_RANK_TABLE_INFO["ages"]["size"]
     ]
 
 ORIG_RING_TIER_TABLES_ASM = [

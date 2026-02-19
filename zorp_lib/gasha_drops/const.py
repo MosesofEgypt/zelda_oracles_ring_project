@@ -14,8 +14,20 @@ PATCH_BANKS = dict(
     GET_RING_TIER_MASK      = 63,
     GET_RINGS_OBTAINED      = 63,
     )
-AGES_PATCH_BANKS = dict()
-SEAS_PATCH_BANKS = dict()
+AGES_PATCH_BANKS = dict(
+    SPAWN_GASHA_TREASURE        = 11,
+    GET_RING_TIER_AND_CHANCE    = 11,
+    DETERMINE_GASHA_DROP        = 11,
+    DETERMINE_RING_DROP_TIER    = 11,
+    DEC_GASHA_MATURITY          = 11,
+    )
+SEAS_PATCH_BANKS = dict(
+    SPAWN_GASHA_TREASURE        = 10,
+    GET_RING_TIER_AND_CHANCE    = 10,
+    DETERMINE_GASHA_DROP        = 10,
+    DETERMINE_RING_DROP_TIER    = 10,
+    DEC_GASHA_MATURITY          = 10,
+    )
 
 PADDING_REPLACE_MAP  = {
     name: b'\x00\x00' for name in set([
@@ -23,11 +35,17 @@ PADDING_REPLACE_MAP  = {
         ])
     }
 
-# TODO: remove these when able
-GASHA_MATURITY_LEVELS = "GASHA_MATURITY_LEVELS"
-GASHA_SPOT_RANKS      = "GASHA_SPOT_RANKS"
+REPLACE_MAP = dict(
+    RING_TIER_3_MAX_KILLS   = 100,
+    RING_TIER_2_MAX_KILLS   = 130,
+    RING_TIER_1_MAX_KILLS   = 160,
 
-globals().update({name: name for name in PADDING_REPLACE_MAP})
+    RING_TIER_2_MIN_KILLS   = 70,
+    RING_TIER_1_MIN_KILLS   = 100,
+    RING_TIER_0_MIN_KILLS   = 130,
+    )
+
+globals().update({name: name for name in (*PADDING_REPLACE_MAP, *REPLACE_MAP)})
 
 
 # NOTE: we're going to use this huge space(16 + 250 bytes)

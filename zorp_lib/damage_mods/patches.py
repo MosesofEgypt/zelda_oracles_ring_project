@@ -6,7 +6,7 @@ def prepare_damage_modifier_patches(
         *, l1_sword_damage=2, l2_sword_damage=3, l3_sword_damage=5,
         red_ring_atk_mod =1.0,  green_ring_atk_mod=0.75,  curse_power_ring_atk_mod=1.0,
         blue_ring_def_mod=0.5,  green_ring_def_mod=0.375, curse_power_ring_def_mod=0.0,
-        gold_ring_atk_mod=0.5,  gold_ring_def_mod=0.25,   atk_mod_max=3.0, 
+        gold_ring_atk_mod=0.5,  gold_ring_def_mod=0.25,   atk_mod_max=5.0, 
         holy_ring_def_mod=0.25, luck_ring_chance=0.3,     def_mod_max=0.375,
         gold_ring_heart_cutoff=4.0, curse_ring_heart_max=4.0,
         **kw
@@ -14,9 +14,9 @@ def prepare_damage_modifier_patches(
     util.update_patch_banks(const, **kw)
     util.update_replace_map(const, **kw)
 
-    red_ring_atk_mod            = max(0, min(3, red_ring_atk_mod))
-    green_ring_atk_mod          = max(0, min(3, green_ring_atk_mod))
-    curse_power_ring_atk_mod    = max(0, min(3, curse_power_ring_atk_mod))
+    red_ring_atk_mod            = max(0, min(5, red_ring_atk_mod))
+    green_ring_atk_mod          = max(0, min(5, green_ring_atk_mod))
+    curse_power_ring_atk_mod    = max(0, min(5, curse_power_ring_atk_mod))
     # NOTE: gold ring is capped at 7/8 because a 3 digit percentage
     #       is too much to try rendering in the description textbox
     gold_ring_atk_mod           = max(0, min(7/8, gold_ring_atk_mod))
