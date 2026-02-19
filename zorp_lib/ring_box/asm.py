@@ -1,5 +1,6 @@
 from .const import *
 from ..const import *
+from ..opcodes import *
 from ..shared.const import *
 
 # this is the table to remap ring positions.
@@ -961,8 +962,8 @@ RING_BOX_CURSOR_MOVED1_ASM = [
     b'\x7e',                    # ld a,(h1)
     b'\xfe\xff',                # cp $ff
     b'\x20\x02',                # jr nz,@redraw
-    b'\xaf',                    #   xor a
-    b'\x77',                    #   ld (hl),a
+    # force redraw by setting previous value to an invalid index
+    LD_HLP,         0x80,       #   ld (hl),$80
     # @redraw
     b'\xcd',DRAW_RING_BOX,      # call drawRingBox
     b'\xf1',                    # pop af
