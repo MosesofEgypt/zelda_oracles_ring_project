@@ -97,7 +97,7 @@ ALCHEMY_RING7_ASM = [
     ]
 
 ALCHEMY_RING8_ASM = [
-    # return if link's has at least 1 of the item
+    # return if link has at least 1 of the item
     b'\xb7',                        # or a
     b'\xc0',                        # ret nz
 
@@ -105,7 +105,7 @@ ALCHEMY_RING8_ASM = [
     b'\x3e',ALCHEMY_RING,           # ld a,ALCHEMY_RING
     b'\xcd',CP_ACTIVE_RING0,        # call cpActiveRing
     b'\x28\x05',                    # jr z,@checkItemType
-    b'\xc3',CLEAR_PARENT_ITEM,      #   call clearParentItem
+    b'\xcd',CLEAR_PARENT_ITEM,      #   call clearParentItem
     b'\xaf',                        #   xor a
     b'\xc9',                        #   ret
 
@@ -114,7 +114,7 @@ ALCHEMY_RING8_ASM = [
     b'\x1a',                        # ld a,(de)
 
     # default to expecting the cost will be for a seed
-    b'\x1e',ALCHEMY_COST_SEED,      #   ld e,alchemyCostSeed
+    b'\x1e',ALCHEMY_COST_SEED,      # ld e,alchemyCostSeed
 
     # @checkBombs
     b'\xfe\x03',                    # cp $03
@@ -134,7 +134,7 @@ ALCHEMY_RING8_ASM = [
 
     # if we don't have enough rupees, clear the parent and return
     b'\x28\x05',                    # jr z,@doAlchemy
-    b'\xc3',CLEAR_PARENT_ITEM,      #   call clearParentItem
+    b'\xcd',CLEAR_PARENT_ITEM,      #   call clearParentItem
     b'\xaf',                        #   xor a
     b'\xc9',                        #   ret
 
@@ -146,7 +146,7 @@ ALCHEMY_RING8_ASM = [
     b'\x01',GOLD_JOY_RING,GREEN_JOY_RING,# ld bc,GREEN_JOY_RING,GOLD_JOY_RING
     b'\xcd',EITHER_RING,            # call eitherRingActive
     b'\x20\x02',                    # jr nz,@checkGoldJoy
-    b'\x3e\x02',                    #   ld a,$02
+    b'\xcb\x27',                    #   sla a
     # @checkGoldJoy
     b'\x30\x02',                    # jr nc,@done
     b'\xcb\x27',                    #   sla a
