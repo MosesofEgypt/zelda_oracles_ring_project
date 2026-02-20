@@ -254,15 +254,15 @@ GET_RANDOM_TIERED_RING1_ASM = [
     CP,             4,              # cp $04
     JR_NC,  "@selectRandomRing",    # jr nc,@selectRandomRing
 
-    DEC_C,                          # dec c
-    # check whether or not we're going to guarantee the ring is new
-    Label("@trySelectNewRing"),
-    INC_C,                          # inc c
+    # determine if we can guarantee a new ring
     CALL,   GET_RANDOM_NUMBER,      # call getRandomNumber
     CP_B,                           # cp b
-
-    # select a random ring if the guaranteed-new chance wasn't hit
     JR_NC,  "@selectRandomRing",    # jr nc,@selectRandomRing
+
+    # loop over each tier until we can guarantee a new ring
+    DEC_C,                          # dec c
+    Label("@trySelectNewRing"),
+    INC_C,                          # inc c
         # use e as a counter to increment through the bytes
         XOR_A,                      #   xor a
         LD_E_A,                     #   ld e,a
@@ -485,54 +485,49 @@ DETERMINE_RING_DROP_TIER_ASM = [
     LD_A_HLP,                   # ld a,(hl)
 
     CP,  RING_TIER_3_MAX_KILLS, # cp a,ringTier3MaxKills
-    JR_C,  "@notTier3",         # jr c,@notTier3
+    JR_C,    "@check2",         # jr c,@check2
         DEC_B,                  #   dec b
 
-    Label("@notTier3"),
-    CP,  RING_TIER_2_MAX_KILLS, # cp a,ringTier2MaxKills
-    JR_C,  "@notTier2",         # jr c,@notTier2
-        DEC_B,                  #   dec b
 
-    Label("@notTier2"),
-    CP,  RING_TIER_1_MAX_KILLS, # cp a,ringTier1MaxKills
-    JR_C,  "@notTier1",         # jr c,@notTier1
+    Label("@check2"),
+    CP,  RING_TIER_2_MAX_KILLS, # cp a,ring2MaxKills
+    JR_C,    "@maybe2",         # jr c,@maybe2
         DEC_B,                  #   dec b
+        JR,  "@check1",         #   jr @check1
 
-    # and now randomly move to better tiers if within range
-    Label("@notTier1"),
-    CP,  RING_TIER_2_MIN_KILLS, # cp a,ringTier2MinKills
-    JR_C,   "+",                # jr c,@notRandInc1
+    Label("@maybe2"),
+    CP,  RING_TIER_2_MIN_KILLS, # cp a,ring2MinKills
+    JR_C,    "@check1",         # jr c,@check1
         CALL,GET_RANDOM_NUMBER, #   call getRandomNumber
         CP,     0x80,           #   cp $80
-        JR_C,   "+",            #   jr c,+
+        JR_C,"@check1",         #   jr c,@check1
             DEC_B,              #   dec b
 
-    Label("+"),
-    LD_A_HLP,                   # ld a,(hl)
-    CP,  RING_TIER_1_MIN_KILLS, # cp a,ringTier1MinKills
-    JR_C,   "++",               # jr c,@notRandInc2
+
+    Label("@check1"),
+    CP,  RING_TIER_1_MAX_KILLS, # cp a,ring1MaxKills
+    JR_C,    "@maybe1",         # jr c,@maybe1
+        DEC_B,                  #   dec b
+        JR,  "@maybe0",         #   jr @check0
+
+    Label("@maybe1"),
+    CP,  RING_TIER_1_MIN_KILLS, # cp a,ring1MinKills
+    JR_C,    "@maybe0",         # jr c,@maybe0
         CALL,GET_RANDOM_NUMBER, #   call getRandomNumber
         CP,     0x80,           #   cp $80
-        JR_C,   "++",           #   jr c,+
+        JR_C,"@maybe0",         #   jr c,@maybe0
             DEC_B,              #   dec b
 
-    Label("++"),
-    LD_A_HLP,                   # ld a,(hl)
-    CP,  RING_TIER_0_MIN_KILLS, # cp a,ringTier0MinKills
-    JR_C,"@checkUnderflow",     # jr c,@done
-        CALL, GET_RANDOM_NUMBER,#   call getRandomNumber
+
+    Label("@maybe0"),
+    CP,  RING_TIER_0_MIN_KILLS, # cp a,ring0MinKills
+    JR_C,    "@checkZero",      # jr c,@checkUnderflow
+        CALL,GET_RANDOM_NUMBER, #   call getRandomNumber
         CP,     0x80,           #   cp $80
-        JR_C,"@checkUnderflow", #   jr c,@done
-            DEC_B,              #     dec b
+        JR_C,"@checkZero",      #   jr c,@checkUnderflow
+            DEC_B,              #   dec b
 
     # ensure we didn't go too low
-    Label("@checkUnderflow"),
-    LD_A_B,                     # ld a,b
-    CP,         0x80,           # cp $80
-    JR_C,       "@checkZero",   # jr c,@next
-        LD_B,       1,          #   ld b,GASHATREASURE_TIER0_RING
-        RET,                    #   ret
-
     Label("@checkZero"),
     OR_A,                       # or a
     RET_NZ,                     # ret nz

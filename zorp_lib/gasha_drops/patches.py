@@ -3,42 +3,9 @@ from .const import *
 from .. import util
 from . import asm, const
 
-'''NOTES
-REF:
-    normal tree growth == 40 kills
-    fast tree growth == 20 kills
-
-determine tier by checking kill count(gasha ring will cut it in half):
-            min kills   max kills
-    tier 3:      40         100
-    tier 2:      70         130
-    tier 1:     100         160
-    tier 0:     130         ---
-
-REF:
-    using shovel increases by 1
-    getting essence increases by 150
-    getting heart piece increases by 36(100 in seasons)
-    getting trade item increases by 100
-    getting any heart refill increases by 4
-    moving screens increases by 5(except going through load door)
-    playing subrosian bros/goron dance hall game increases by 30
-    harvesting decreases by 200
-
-CHANGE:
-    getting essence increases by 250
-    getting heart piece increases by 100
-    getting trade item increases by 200
-    getting any heart refill increases by 2
-    moving screens increases by 5(except going through load door)
-    harvesting decreases by 25%
-
-determine chance to guarantee new ring using gasha maturity
-'''
-
 def prepare_gasha_drop_patches(
-        tier_3_max_kills=100, tier_2_max_kills=130, tier_1_max_kills=160, 
-        tier_2_min_kills=70,  tier_1_min_kills=100, tier_0_min_kills=130, 
+        tier_3_max_kills=70, tier_2_max_kills=90, tier_1_max_kills=110, 
+        tier_2_min_kills=50, tier_1_min_kills=60, tier_0_min_kills=70, 
         **kw
         ):
     util.update_patch_banks(const, **kw)
