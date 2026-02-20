@@ -55,19 +55,19 @@ RING_TEXT_STRINGS = [
           "{DEF}{{TXT_DOWN}}")),
         ("{POWER_RING_L}2",
          ("{ATK}{{TXT_UP}}{{TXT_UP}}{{TXT_NEWL}}"
-          "{DEF}{{TXT_DOWN}}{{TXT_DOWN}}")),
+          "{DEF}{{TXT_DOWN}}")),
         ("{POWER_RING_L}3",
          ("{ATK}{{TXT_UP}}{{TXT_UP}}{{TXT_UP}}{{TXT_NEWL}}"
-          "{DEF}{{TXT_DOWN}}{{TXT_DOWN}}{{TXT_DOWN}}")),
+          "{DEF}{{TXT_DOWN}}")),
         ("{ARMOR_RING_L}1",
-         ("{ATK}{{TXT_DOWN}}{{TXT_NEWL}}"
-          "{DEF}{{TXT_UP}}")),
+         ("{DEF}{{TXT_UP}}{{TXT_NEWL}}"
+          "{ATK}{{TXT_DOWN}}")),
         ("{ARMOR_RING_L}2",
-         ("{ATK}{{TXT_DOWN}}{{TXT_DOWN}}{{TXT_NEWL}}"
-          "{DEF}{{TXT_UP}}{{TXT_UP}}")),
-        ("{ARMOR_RING_L}3", 
-         ("{ATK}{{TXT_DOWN}}{{TXT_DOWN}}{{TXT_DOWN}}{{TXT_NEWL}}"
-          "{DEF}{{TXT_UP}}{{TXT_UP}}{{TXT_UP}}")),
+         ("{DEF}{{TXT_UP}}{{TXT_UP}}{{TXT_NEWL}}"
+          "{ATK}{{TXT_DOWN}}")),
+        ("{ARMOR_RING_L}3",
+         ("{DEF}{{TXT_UP}}{{TXT_UP}}{{TXT_UP}}{{TXT_NEWL}}"
+          "{ATK}{{TXT_DOWN}}")),
         ("{RED} Ring",  "{ATK}{{RED_RING_VAL}}%"),
         ("{BLUE} Ring", "{DEF}{{BLUE_RING_VAL}}%"),
         ("{GREEN} Ring", ("{ATK}{{GREEN_RING_VAL1}}%{{TXT_NEWL}}"
@@ -107,7 +107,7 @@ RING_TEXT_STRINGS = [
         ("{BLUE}{LUCK_RING}", "Fall{LUCK_RING_DESC}"),
         ("Alchemy Ring", ("Turn Rupees into{{TXT_NEWL}}"
                           "{{TXT_COLOR}}\x01Bombs{{TXT_COLOR}}\x00 and Seeds")),
-        ("{RED}{LUCK_RING}","Spike{LUCK_RING_DESC}"),
+        ("{RED}{LUCK_RING}",   "Spike{LUCK_RING_DESC}"),
         ("{GREEN}{HOLY_RING}", "Elec. zap{HOLY_RING_DESC}"),
         ("{BLUE}{HOLY_RING}",  "Zora fire{HOLY_RING_DESC}"),
         ("{RED}{HOLY_RING}",   "Wisp jinx{HOLY_RING_DESC}"),
@@ -159,8 +159,8 @@ RING_TEXT_STRINGS = [
                                "{BECOME_}{GOLD}")),
         ("{BLUE}{COLOR_RING}", ("100 rings found{{TXT_NEWL}}"
                                 "{BECOME_}{BLUE}")),
-        ("G.Boy{COLOR_RING}", ("This is now a{{TXT_NEWL}}"
-                               "Game Boy Color!")),
+        ("GB{COLOR_RING}",  ("This is now a{{TXT_NEWL}}"
+                              "Game Boy Color!")),
         ("{GASHA} Ring", ("Grow {GASHA}{{TXT_NEWL}}"
                           "trees quickly")),
         ("Peace Ring", ("Defuse held Bomb"

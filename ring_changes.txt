@@ -1,0 +1,222 @@
+Below are the details of what rings have been added, removed, and changed.
+
+NOTE: ring combos will be discussed in a separate doc to avoid spoilers for those who want to figure them out themselves.
+
+Ring Stacking:
+    Any in-game ring description that includes "Can stack" indicates that wearing that ring with
+    others that affect the same kind of thing(i.e. both heart rings, both rang rings, both light 
+    rings, etc) will produce a stronger effect(often stronger than just both added together).
+
+    The only stackings that are worth going into more detail on are the Joy rings and rings that
+    modify attack/defense. Those are described below.
+
+    Joy Rings:
+        The Red/Green/Blue Joy Rings each stack with Gold Joy Ring to provide x4 of that item.
+        Red Joy Ring + Gold Joy Ring + Discovery Ring makes for quite fast rupee farming.
+        Blue and Gold Joy Rings also stack with Heart Ring L-1/2 to multiply recovered hearts by 2 or 4
+        Green and Gold Joy Rings also stack with Alchemy Ring to multiply generated ammo by 2 or 4
+
+    Attack/Defense:
+        The way attack and defense are calculated has been tuned to avoid making ring stacking too busted.
+
+        When calculating damage dealt, the sum of the multipliers are added together first, then 
+        multiplied by the sword's base damage, and then any +- modifiers are added to the result.
+        The final value is rounded down, and is capped to a minimum of 1/4 heart damage.
+        Examples:
+            Red Ring        = +100%
+            Red Curse Ring  = +100%
+            Gold Ring       = +100% (assuming we have less than 4 hearts)
+            Green Ring      = +75%
+            Power Ring L-3  = +3
+
+            Master Sword    = 5 base damage
+                Total = 5*(1 + (1 + 1 + 1 + 0.75)) + 3 = 26.75 = 26 damage
+
+            Noble Sword     = 3 base damage
+                Total = 3*(1 + (1 + 1 + 1 + 0.75)) + 3 = 17.25 = 17 damage
+
+            Wooden Sword    = 2 base damage
+                Total = 2*(1 + (1 + 1 + 1 + 0.75)) + 3 = 12.25 = 12 damage
+        
+        When calculating damage taken, the +- modifiers are first added to the base damage, which
+        is then multiplied by the sum of the multipliers. The final value is rounded down, and is
+        then capped to a minimum of 1/8 heart damage. Additionally, the armor percentage is capped
+        to 5/8, or 62.5% reduction.
+
+        Examples:
+            NOTE: 1 point of damage == 1/8 of a heart
+     
+            Gold Ring        = -25%
+            Green Ring       = -37.5%
+            Armor Ring L-1   = -1
+
+            Cheep Cheep      = 4 base damage
+                Total = max(1, (4 - 1)*max(0.375, (1 - 0.25 - 0.375)))  = 1.125 = 1 damage
+
+            Blue Darknut     = 8 base damage
+                Total = max(1, (8 - 1)*max(0.375, (1 - 0.25 - 0.375)))  = 2.625 = 2 damage
+
+            Ganon Trident    = 12 base damage
+                Total = max(1, (12 - 1)*max(0.375, (1 - 0.25 - 0.375))) = 4.125 = 3 damage
+
+            Ganon (Contact?) = 16 base damage
+                Total = max(1, (16 - 1)*max(0.375, (1 - 0.25 - 0.375))) = 5.625 = 5 damage
+
+
+Removed rings:
+    Whimsical Ring:
+        Repurposed for Gold Ring.
+        We can all agree this thing is useless. No one will miss it.
+
+    Protection Ring:
+        Repurposed for Fairy's Ring.
+        Also pretty useless since hardly anything will hit you for more than a heart, and even if it does you also have defense rings.
+
+    Dbl. Edged Ring:
+        Repurposed for Blue Curse Ring.
+        Would be too powerful with the other damage modifier rings being able to stack now.
+
+    Snowshoe Ring:
+        Repurposed for Haste Ring.
+        The effect has been combined into the Hiker's Ring, so this ring is no longer necessary.
+
+    Gold Luck Ring:
+        Repurposed for Alchemy Ring.
+        The 50% fall damage effect has been moved to the Blue Luck Ring, so this ring is no longer needed.
+
+    Whisp Ring:
+        Repurposed for GB Color Ring.
+        Whisp nulling effect has been moved to Red Holy Ring.
+
+    Cursed Ring:
+        Converted into Red Curse Ring
+        No one will miss this thing, and if they do they can use both new curse rings instead.
+
+    Quicksand Ring:
+        Upgraded into Hiker's Ring(quicksand effect remains intact.)
+
+    Pegasus Ring:
+        Upgraded into Mystic Ring(Pegasus effect remains intact.)
+
+    Friendship Ring:
+        Upgraded into Vasu's Ring.
+
+    Rupee/Hundredth/Slayers/Sign Ring:
+        Upgraded into Green/Blue/Red/Gold Color Ring.
+
+
+New rings:
+    Gold Ring:
+        Gives +50% sword damage and -25% damage taken.
+        If you have less than 4 hearts, these double to 100% and -50%.
+
+    Haste Ring:
+        Movement speed increased.
+        Works by bumping the movement speed on the current tile to the next fastest.
+        Speed-on-stairs -> Speed-on-grass
+        Speed-on-vines  -> Speed-on-grass
+        Speed-on-ladder -> Speed-on-grass
+        Speed-on-grass  -> Normal-speed
+        Normal-speed    -> Pegasus-speed-on-grass
+
+    Vasu's Ring:
+        Open the ring list from anywhere by clicking the Ring Box in your inventory.
+
+    Fairy's Ring:
+        Revives you if you die, but breaks and is removed from your ring list.
+        Only activates if you die without a potion.
+        Replacement rings can be gotten as a tier 0 drop.
+
+    Hiker's Ring:
+        Movement unaffected by ice/quicksand.
+        No speed penalty while moving on stairs/grass/vines.
+
+    Mystic Ring:
+        Lengthens Pegasus seed and Scent seed effects.
+        Super Slingshot fires 5 seeds.
+        Seed Shooter can have 5 seeds onscreen at once, and the bounces are doubled.
+        Ember seeds burn much faster.
+        Scent seeds deal +2 damage.
+
+    Curse Power Ring:
+        Adds 100% more base attack, but your hearts are constantly capped to 4.
+
+    Curse Armor Ring:
+        All damage you received and deal is reduced to 1/4 heart(Sword L-1).
+        Other armor/power rings are ignored while this is equipped.
+
+    Alchemy Ring:
+        If you attempt to use a seed/bomb/bombchu while you have none, one will be crafted from rupees.
+        Stacks with Green and Gold Joy rings to generate x2/x4 items if you wear one/both joy rings.
+        Cost per item is:
+            * Seed:     2 Rupees
+            * Bomb:     5 Rupees
+            * Bombchu:  50 Rupees
+
+    Green Color Ring:
+        This is the Rupee Ring, except it changes your color to green.
+        Sounds useless, but can combine with another color ring to blend the colors.
+
+    Blue Color Ring:
+        This is the Hundredth Ring, except it changes your color to blue.
+        Can combine with another color ring to blend the colors.
+
+    Red Color Ring:
+        This is the Slayers Ring, except it changes your color to red.
+        Can combine with another color ring to blend the colors.
+
+    Gold Color Ring:
+        This is the Sign Ring, except it changes your color to gold.
+        Can combine with another color ring to blend the colors.
+
+    GB Color Ring:
+        Switches the game to GBC mode(i.e. uses darker color palette and advance shop closes.)
+
+
+Modified rings:
+    Unless stated otherwise, assume any unmentioned effects from the base game are still present.
+
+    Power/Armor Rings L-1/2/3:
+        Each tier increases the buff by 1 without increasing the debuff.
+        This means wearing a L-3 of each doesn't cancel each other out.
+
+    Green Ring:
+        25% more damage dealt and 12.5% less damage taken than the original Green Ring.
+
+    Fist/Experts Ring:
+        Works with only 1 item slot empty instead of requiring both.
+
+    Blast Ring:
+        Increases blast radius by 2x
+
+    GBA Time/Nature Ring:
+        Increases invulnerability timer by 60%
+
+    Steadfast Ring:
+        Enemies contacting your shield will not knock you back.
+
+    Bomber's Ring:
+        Up to 4 bombs can be set at once.
+
+    Green/Blue/Red Luck Ring:
+        Provides a 30% chance to reduce damage from a hit to 0.
+
+    Green/Blue/Red Holy Ring:
+        Provides immunity to electricity/zora fire/whisp jinxes
+        Reduces damage taken by 25%
+
+    Roc's Ring:
+        Increased jump height
+
+    Discovery Ring:
+        Increases chance for random item drops to occur.
+        Equates to roughly 2x increased liklihood.
+
+    Octo/Moblin/Like Like/Subrosian/First Gen Ring:
+        Does not prevent usage of any items.
+        Works during cutscenes.
+
+    Victory Ring:
+        Upgrades your sword and shield level.
+        1 -> 2   and 2 -> 3
+        Does not go past Master Sword

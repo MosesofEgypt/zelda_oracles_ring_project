@@ -89,8 +89,8 @@ NEW_ARMOR_RING0_ASM    = [
      6,                                 # ARMOR_RING_L3_DEF_MOD
      4,                                 # ARMOR_RING_L2_DEF_MOD
      2,                                 # ARMOR_RING_L1_DEF_MOD
-    -6,                                 # POWER_RING_L3_DEF_MOD
-    -4,                                 # POWER_RING_L2_DEF_MOD
+    -2,                                 # POWER_RING_L3_DEF_MOD
+    -2,                                 # POWER_RING_L2_DEF_MOD
     -2,                                 # POWER_RING_L1_DEF_MOD
     # @armorModTableEnd
     b'\xcd',ARMOR_RING1,                # call armorRing1
@@ -408,8 +408,8 @@ NEW_POWER_RING_ASM = [
      3,                                 # ARMOR_RING_L3_ATK_MOD
      2,                                 # ARMOR_RING_L2_ATK_MOD
      1,                                 # ARMOR_RING_L1_ATK_MOD
-    -3,                                 # POWER_RING_L3_ATK_MOD
-    -2,                                 # POWER_RING_L2_ATK_MOD
+    -1,                                 # POWER_RING_L3_ATK_MOD
+    -1,                                 # POWER_RING_L2_ATK_MOD
     -1,                                 # POWER_RING_L1_ATK_MOD
     # @powerModTableEnd
     b'\x5f',                            # ld e,a

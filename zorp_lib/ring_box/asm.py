@@ -29,7 +29,7 @@ RING_MAP_TABLE_ASM = [
     GREEN_COLOR_RING,RED_COLOR_RING,   BLUE_COLOR_RING, GOLD_COLOR_RING,
     GBOY_COLOR_RING, GBA_NATURE_RING,  CURSE_POWER_RING,FAIRYS_RING,
     OCTO_RING,       LIKE_LIKE_RING,   MOBLIN_RING,     SUBROSIAN_RING,
-    FIRST_GEN_RING,  GBA_TIME_RING,    CURSE_ARMOR_RING,FRIENDSHIP_RING, 
+    FIRST_GEN_RING,  GBA_TIME_RING,    CURSE_ARMOR_RING,VASUS_RING, 
     ]
 assert (len(set(RING_MAP_TABLE_ASM)) == 0x40 and len(RING_MAP_TABLE_ASM) == 0x40),\
        "Ring map table is not the expected size after removing duplicates(%i and %i vs %i)" %\
@@ -1052,7 +1052,7 @@ RING_BOX_MENU1_ASM = [
     b'\xc0',                        # ret nz
     # make the ring box only openable in the menu at level-3
     # or if you're carrying the friendship ring
-    b'\x3e',FRIENDSHIP_RING,        # ld a,FRIENDSHIP_RING
+    b'\x3e',VASUS_RING,             # ld a,VASUS_RING
     b'\xcd',CP_ACTIVE_RING0,        # call cpActiveRing
     b'\x28\x06',                    # jr z,@openPortalBox
     b'\xfa',W_BOX_LEVEL,            # ld a,(wRingBoxLevel)
