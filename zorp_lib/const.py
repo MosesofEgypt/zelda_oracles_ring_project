@@ -294,7 +294,7 @@ AGES_REPLACE_MAP = dict(
     GET_RANDOM_TIERED_RING  = b'\xe0\x17', # getRandomRingOfGivenTier
     NUDGE_ANGLE_TOWARDS     = b'\xd4\x1f', # objectNudgeAngleTowards
     ITEM_DEC_COUNTER1       = b'\xd6\x23', # itemDecCounter1
-    RANG_UPDATE_ANIM        = b'\x70\xcd', # updateSpeedAndAnimation
+    RANG_UPDATE_ANIM        = b'\x70',     # updateSpeedAndAnimation
     SWORD_TRY_BREAK_TILE    = b'\x9d\x61', # tryBreakTileWithSword
     PARENT_CHECK_BUTTON     = b'\x96\x54', # parentItemCheckButtonPressed
     ITEM_DISABLE_LINK_MOVE  = b'\x5d\x54', # itemDisableLinkMovement
@@ -356,6 +356,9 @@ AGES_REPLACE_MAP = dict(
     RELOAD_INV_MENU_GFX     = b'\xb2\x55', # reloadInvMenuGfx
     W_GASHA_MATURITY        = b'\x5f\xc6', # wGashaMaturity
     W_GASHA_MATURITY_H      = b'\x60\xc6', # wGashaMaturity+1
+    OBJ_CLINK_INTERAC       = b'\x81\x4b', # objectCreateClinkInteraction
+    RANG_UPDATE_SPEED_ANIM  = b'\xc6\x57', # @updateSpeedAndAnimation
+    OBJ_GET_REL_OBJ1_VAR    = b'\x60\x21', # objectGetRelatedObject1Var
     )
 SEAS_REPLACE_MAP = dict(
     GET_RANDOM_NUMBER       = b'\x1a\x04', # getRandomNumber
@@ -427,7 +430,7 @@ SEAS_REPLACE_MAP = dict(
     GET_RANDOM_TIERED_RING  = b'\xb9\x17', # getRandomRingOfGivenTier
     NUDGE_ANGLE_TOWARDS     = b'\x92\x1f', # objectNudgeAngleTowards
     ITEM_DEC_COUNTER1       = b'\x91\x23', # itemDecCounter1
-    RANG_UPDATE_ANIM        = b'\x73\xcd', # updateSpeedAndAnimation
+    RANG_UPDATE_ANIM        = b'\x73',     # updateSpeedAndAnimation
     SWORD_TRY_BREAK_TILE    = b'\x1c\x5f', # tryBreakTileWithSword
     PARENT_CHECK_BUTTON     = b'\xe8\x53', # parentItemCheckButtonPressed
     ITEM_DISABLE_LINK_MOVE  = b'\xaf\x53', # itemDisableLinkMovement
@@ -489,6 +492,9 @@ SEAS_REPLACE_MAP = dict(
     RELOAD_INV_MENU_GFX     = b'\x7c\x55', # reloadInvMenuGfx
     W_GASHA_MATURITY        = b'\x5c\xc6', # wGashaMaturity
     W_GASHA_MATURITY_H      = b'\x5d\xc6', # wGashaMaturity+1
+    OBJ_CLINK_INTERAC       = b'\x69\x4b', # objectCreateClinkInteraction
+    RANG_UPDATE_SPEED_ANIM  = b'\x26\x56', # @updateSpeedAndAnimation
+    OBJ_GET_REL_OBJ1_VAR    = b'\x1e\x21', # objectGetRelatedObject1Var
     )
 
 RING_TEXT_SYMBOLS = dict(

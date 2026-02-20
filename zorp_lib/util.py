@@ -182,6 +182,7 @@ def serialize_patch(patch_parts, replace_map):
 
             if is_rel_jump and i+1 < len(patch_parts):
                 off, v = off+1, patch_parts[i+1]
+                v = replace_map.get(v, v)
 
                 # relative jump will need to be calculated here
                 if isinstance(v, str):
