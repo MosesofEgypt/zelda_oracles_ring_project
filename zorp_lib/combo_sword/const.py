@@ -28,7 +28,7 @@ PADDING_REPLACE_MAP  = {
 
 REPLACE_MAP = dict(
     SPIN_SWING_COUNTER      = util.to_bytes(15*4+1),
-    SWORD_BEAM_LIMIT        = util.to_bytes(2),
+    SWORD_BEAM_LIMIT        = util.to_bytes(3),
     SUPER_BEAM_DELAY        = util.to_bytes(50),
     LIGHT_RING_L1_CUTOFF    = util.to_bytes(3*8),
     LIGHT_RING_L2_CUTOFF    = util.to_bytes(6*8),

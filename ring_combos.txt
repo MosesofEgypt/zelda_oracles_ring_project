@@ -1,1 +1,95 @@
-WRITE THIS
+Ring combos are effects that can occur when two or more rings are worn.
+Combos differ from effect stacking in that the effects are unique, not
+just an increase in the effect strength. There are combos that affect
+the sword, bombs, boomerang, feather, item pickups, punching, and even
+some collision properties.
+
+Combo Effects:
+    1:  Infinite Magic Boomerang:
+        The Magic Boomerang can be controlled as long as the button is held down.
+
+    2:  Max speed Boomerang:
+        The boomerang will move across the screen as fast as an object is allowed to move.
+
+    3:  Remote Bombs:
+        Bombs don't explode until you press the bomb button again.
+
+    4:  Instant Bombs:
+        Bombs explode instantly.
+
+    5:  Mining Bombs:
+        Causes bombs to dig up any earth within the explosion radius.
+        Great when combined with Red and Gold Joy Rings when farming for Rupees.
+        NOTE: Must have acquired the shovel.
+
+    6:  Joyful Alchemy:
+        Double the number of ammo created by the Alchemy ring.
+        Wearing both Green Joy and Gold Joy will quadruple the amount.
+
+    7:  Joyful Recovery:
+        Double the number of hearts recovered by the Heart rings.
+        Wearing both Blue Joy and Gold Joy will quadruple the amount.
+
+    8:  Dolphin Link:
+        Enables use of most items while swimming in shallow water(including the feather).
+        Link must first dive so he appears as a shadow(prevents players from jumping whirlpools).
+
+    9:  Acrobat Link:
+        Landing on an enemy causes Link to vault off them into the air.
+
+    10: Expert Acrobat Link:
+        Landing on an enemy causes Link to vault off them into the air, while stunning them.
+
+    11: Kenpo Master Link:
+        Allows Link to destroy various types of tiles with his fists.
+        Enables much of the game to be traversed without pausing to swap items.
+        NOTE: Must have acquired specific items to destroy specific tiles.
+            Small tree    - Ember Seeds
+            Bush/Pot/Rock - Bracelet
+            Dirt mound    - Shovel
+            Cracked walls - Bombs
+
+    12: Hadouken:
+        Punching shoots a fireball that burns enemies on contact.
+        NOTE: Must have acquired the Slingshot or Seed Shooter.
+
+    13: Hurricane Spin:
+        Spin-attack 15 times while being able to move, but get dizzy once it ends.
+
+    14: Enter the SHMUP:
+        Hold charged sword to continually fire sword beams.
+
+    15: Become the Beamos:
+        Up to 3 sword beams on screen at once.
+
+
+
+
+DO NOT LOOK PAST THIS LINE IF YOU WANT TO FIGURE THE COMBOS OUT FOR YOURSELF
+
+
+
+
+Combo Requirements:
+    1:  Rang Ring L-1 + Rang Ring L-2
+    2:  Haste Ring + Rang Ring L-1 or L-2  or
+        Toss Ring  + Rang Ring L-1 or L-2
+    3:  Peace Ring + Bombers Ring
+    4:  Haste Ring + Bombproof Ring
+    5:  Blast Ring + Discovery Ring
+    6:  Alchemy Ring + Green Joy Ring  or
+        Alchemy Ring +  Gold Joy Ring  or
+        Alchemy Ring + Green Joy Ring + Gold Joy Ring
+    7:  Heart Ring L-1 and/or L-2 + Blue Joy Ring  or
+        Heart Ring L-1 and/or L-2 + Gold Joy Ring  or
+        Heart Ring L-1 and/or L-2 + Blue Joy Ring + Gold Joy Ring
+    8:  Zora Ring  + Swimmer's Ring or
+        Zora Ring  + Roc's Ring     or
+        Roc's Ring + Swimmer's Ring
+    9:  Roc's Ring + Steadfast Ring
+    10: Roc's Ring + Steadfast Ring + Expert's Ring
+    11: Expert's Ring + Fist Ring
+    12: Expert's Ring + Energy Ring
+    13: Spin Ring   + Charge Ring
+    14: Energy Ring + Charge Ring
+    15: Energy Ring + Light Ring L-1 or L-2

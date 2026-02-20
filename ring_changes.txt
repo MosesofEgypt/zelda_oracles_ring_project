@@ -14,7 +14,6 @@ Ring Stacking:
         The Red/Green/Blue Joy Rings each stack with Gold Joy Ring to provide x4 of that item.
         Red Joy Ring + Gold Joy Ring + Discovery Ring makes for quite fast rupee farming.
         Blue and Gold Joy Rings also stack with Heart Ring L-1/2 to multiply recovered hearts by 2 or 4
-        Green and Gold Joy Rings also stack with Alchemy Ring to multiply generated ammo by 2 or 4
 
     Attack/Defense:
         The way attack and defense are calculated has been tuned to avoid making ring stacking too busted.
@@ -147,7 +146,6 @@ New rings:
 
     Alchemy Ring:
         If you attempt to use a seed/bomb/bombchu while you have none, one will be crafted from rupees.
-        Stacks with Green and Gold Joy rings to generate x2/x4 items if you wear one/both joy rings.
         Cost per item is:
             * Seed:     2 Rupees
             * Bomb:     5 Rupees

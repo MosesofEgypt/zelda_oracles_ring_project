@@ -529,6 +529,7 @@ DETERMINE_RING_DROP_TIER_ASM = [
 
     # ensure we didn't go too low
     Label("@checkZero"),
+    LD_A_B,                     # ld a,b
     OR_A,                       # or a
     RET_NZ,                     # ret nz
     LD_B,       1,              # ld b,GASHATREASURE_TIER0_RING

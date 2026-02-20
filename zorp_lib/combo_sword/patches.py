@@ -5,7 +5,7 @@ from . import asm, const
 
 def prepare_combo_sword_patches(
         *, sword_spin_capped=True, 
-        super_spin_count=15, sword_beam_limit=2, super_beam_delay=50,
+        super_spin_count=15, sword_beam_limit=3, super_beam_delay=50,
         light_ring_l1_cutoff=3.0, light_ring_l2_cutoff=6.0,
         **kw):
     util.update_patch_banks(const, **kw)
