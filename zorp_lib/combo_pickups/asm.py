@@ -42,7 +42,7 @@ NEW_HEART_CHECK_STACKED_ASM = [
 NEW_HEART_CHECK_SUPER0_ASM = [
     b'\x01',HEART_RING_L1,HEART_RING_L2,# ld bc,HEART_RING_L2,HEART_RING_L1
     b'\xcd',EITHER_RING,                # call eitherRingActive
-    b'\x01\x08\x02',                    # ld bc $02,$08
+    b'\x01\x10\x02',                    # ld bc $02,$10
     b'\x28\x04',                        # jr z,@heartLevel2Or3
     b'\x0e\x08',                        # ld c $08
     b'\x30\x2b',                        # jr nc,@clearCounter
