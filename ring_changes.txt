@@ -13,7 +13,6 @@ Ring Stacking:
     Joy Rings:
         The Red/Green/Blue Joy Rings each stack with Gold Joy Ring to provide x4 of that item.
         Red Joy Ring + Gold Joy Ring + Discovery Ring makes for quite fast rupee farming.
-        Blue and Gold Joy Rings also stack with Heart Ring L-1/2 to multiply recovered hearts by 2 or 4
 
     Attack/Defense:
         The way attack and defense are calculated has been tuned to avoid making ring stacking too busted.
