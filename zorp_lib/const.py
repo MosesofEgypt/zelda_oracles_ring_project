@@ -191,6 +191,7 @@ REPLACE_MAP = dict(
     TEXT_DISPLAY_MODE       = b'\xa1\xcb', # wTextDisplayMode
     RING_MENU_MODE          = b'\xd3\xcb', # wRingMenu_mode
     RINGS_OBTAINED          = b'\x16\xc6', # wRingsObtained
+    W_SCREEN_OFF_Y          = b'\x08\xcd', # wScreenOffsetY
     W_SCROLL_MODE           = b'\x00\xcd', # wScrollMode
     W_PALETTE_THREAD_MODE   = b'\xab\xc4', # wPaletteThread_mode
     W_ACTIVE_LANGUAGE       = b'\x2a\xc6', # wActiveLanguage

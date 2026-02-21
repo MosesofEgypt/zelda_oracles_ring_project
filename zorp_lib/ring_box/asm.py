@@ -1059,7 +1059,13 @@ RING_BOX_MENU1_ASM = [
     CP,         PORTAL_BOX_LEVEL,       # cp $portalBoxLevel
     RET_C,                              # ret c
     Label("@openPortalBox"),
-    LD_A, 0x56,                         # ld a,SND_SELECTITEM
+    LD_A,       0x56,                   # ld a,SND_SELECTITEM
+    CALL,       PLAY_SOUND,             # call playSound
+    LD_A,       0x81,                   # ld a,RING_MENU_TYPE_LIST | 0x80
+    LD_A16_A,   RING_MENU_MODE,         # ld (wRingMenu_mode),a
+    LD_A,       MENU_TYPE_RINGS,        # ld a,$04
+    LD_A16_A,   OPENED_MENU_TYPE,       # ld (wOpenedMenuType),a
+    CALL,       OPEN_MENU,              # call openMenu
     # set the camera coords to zero or it messes up text rendering
     XOR_A,                              # xor a
     PUSH_HL,                            # push hl
@@ -1068,12 +1074,11 @@ RING_BOX_MENU1_ASM = [
     LDI_HLP_A,                          # ldi (hl),a
     LDI_HLP_A,                          # ldi (hl),a
     LDI_HLP_A,                          # ldi (hl),a
+    LD_HL,  W_SCREEN_OFF_Y,             # ld hl,(wScreenOffsetY)
+    LDI_HLP_A,                          # ldi (hl),a
+    LDI_HLP_A,                          # ldi (hl),a
     POP_HL,                             # pop hl
-    LD_A,       0x81,                   # ld a,RING_MENU_TYPE_LIST | 0x80
-    LD_A16_A,   RING_MENU_MODE,         # ld (wRingMenu_mode),a
-    LD_A,       MENU_TYPE_RINGS,        # ld a,$04
-    LD_A16_A,   OPENED_MENU_TYPE,       # ld (wOpenedMenuType),a
-    JP,         OPEN_MENU,              # jp openMenu
+    RET,                                # ret
     ]
 
 ORIG_OPEN_MENU0_ASM = [
