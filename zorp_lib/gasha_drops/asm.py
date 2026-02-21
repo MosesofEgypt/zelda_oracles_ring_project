@@ -408,7 +408,7 @@ GET_RANDOM_TIERED_RING1_ASM = [
     LD_E_A,                         # ld e,a
     LDI_A_HLP,                      # ldi a,(hl)
     CP_B,                           # cp b
-    RET_C,                          # ret c
+    RET_NC,                         # ret nc
     JR,     "@selectRingByWeight",  # jr @selectRingByWeight
     ]
 
