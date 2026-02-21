@@ -1047,50 +1047,58 @@ NEW_RING_BOX_MENU0_ASM = [
     ]
 RING_BOX_MENU1_ASM = [
     # this will allow opening the ring list menu from the inventory
-    b'\xfa',MENU1_CURSOR_POS,       # ld a,(wInventorySubmenu1CursorPos)
-    b'\xfe\x0f',                    # cp $0f
-    b'\xc0',                        # ret nz
+    LD_A_A16,   MENU1_CURSOR_POS,       # ld a,(wInventorySubmenu1CursorPos)
+    CP,         0x0F,                   # cp $0f
+    RET_NZ,                             # ret nz
     # make the ring box only openable in the menu at level-3
     # or if you're carrying the friendship ring
-    b'\x3e',VASUS_RING,             # ld a,VASUS_RING
-    b'\xcd',CP_ACTIVE_RING0,        # call cpActiveRing
-    b'\x28\x06',                    # jr z,@openPortalBox
-    b'\xfa',W_BOX_LEVEL,            # ld a,(wRingBoxLevel)
-    b'\xfe',PORTAL_BOX_LEVEL,       # cp $portalBoxLevel
-    b'\xd8',                        # ret c
-    # @openPortalBox
-    b'\x3e\x56',                    # ld a,SND_SELECTITEM
-    b'\xcd',PLAY_SOUND,             # call playSound
-    #b'\xcd',CLOSE_MENU,             # call closeMenu
-    b'\xcd',FAST_FADEOUT_WHITE,     # call fastFadeoutToWhite
-    b'\xcd',RELOAD_GFX_ON_MENU,     # call reloadGraphicsOnExitMenu
-    #b'\xcd',SAVE_GFX_ON_MENU,       # call saveGraphicsOnEnterMenu
-    #b'\xcd',FADEIN_WHITE,           # call fadeinFromWhite
-    #b'\xcd',FADEOUT_WHITE,          # call fadeoutToWhite
-    #b'\xcd',FAST_FADEIN_WHITE,      # call fastFadeinFromWhite    
-    b'\x3e\x02',                    # ld a,$02
-    b'\xea',TEXT_DISPLAY_MODE,      # ld (wTextDisplayMode),a
-    b'\x3e',MENU_TYPE_RINGS,        # ld a,$04
-    b'\xea',OPENED_MENU_TYPE,       # ld (wOpenedMenuType),a
-    b'\x3e',RING_MENU_TYPE_LIST,    # ld a,$01
-    b'\xea',RING_MENU_MODE,         # ld (wRingMenu_mode),a
-    # NOTE: some loads are being removed since they're not necessary
-    #b'\x3e\x01',                    # ld a,$01
-    b'\xea',MENU_LOAD_STATE,        # ld (wMenuLoadState),a
-    b'\x3e\x00',                    # ld a,$00
-    b'\xea',MENU_ACTIVE_STATE,      # ld (wMenuActiveState),a
-    #b'\x3e\x00',                    # ld a,$00
-    b'\xea',SUBMENU_STATE,          # ld (wSubmenuState),a
-    #b'\x3e\x00',                    # ld a,$00
-    b'\xea',RING_MENU_PAGE,         # ld (ringMenuPage),a
-    b'\xe5',                        # push hl
+    LD_A,       VASUS_RING,             # ld a,VASUS_RING
+    CALL,       CP_ACTIVE_RING0,        # call cpActiveRing
+    JR_Z,       "@openPortalBox",       # jr z,@openPortalBox
+    LD_A_A16,   W_BOX_LEVEL,            # ld a,(wRingBoxLevel)
+    CP,         PORTAL_BOX_LEVEL,       # cp $portalBoxLevel
+    RET_C,                              # ret c
+    Label("@openPortalBox"),
+    LD_A, 0x56,                         # ld a,SND_SELECTITEM
     # set the camera coords to zero or it messes up text rendering
-    b'\x21',H_CAMERA_Y,             # ld hl,(hCameraY)
-    b'\x22',                        # ldi (hl),a
-    b'\x22',                        # ldi (hl),a
-    b'\x22',                        # ldi (hl),a
-    b'\x22',                        # ldi (hl),a
-    b'\xe1',                        # pop hl
-    #b'\xcd',OPEN_MENU,              # call openMenu
-    b'\xc9',                        # ret
+    XOR_A,                              # xor a
+    PUSH_HL,                            # push hl
+    LD_HL,  H_CAMERA_Y,                 # ld hl,(hCameraY)
+    LDI_HLP_A,                          # ldi (hl),a
+    LDI_HLP_A,                          # ldi (hl),a
+    LDI_HLP_A,                          # ldi (hl),a
+    LDI_HLP_A,                          # ldi (hl),a
+    POP_HL,                             # pop hl
+    LD_A,       0x81,                   # ld a,RING_MENU_TYPE_LIST | 0x80
+    LD_A16_A,   RING_MENU_MODE,         # ld (wRingMenu_mode),a
+    LD_A,       MENU_TYPE_RINGS,        # ld a,$04
+    LD_A16_A,   OPENED_MENU_TYPE,       # ld (wOpenedMenuType),a
+    JP,         OPEN_MENU,              # jp openMenu
+    ]
+
+ORIG_OPEN_MENU0_ASM = [
+    # @openMenu:
+    LD_A_A16,   OPENED_MENU_TYPE,   # ld a,(wOpenedMenuType)
+    CP,         3,                  # cp MENU_SAVEQUIT
+    LD_A,       0x54,               # ld a,SND_OPENMENU
+    CALL_NZ,    PLAY_SOUND,         # call nz,playSound
+    LD_A,       2,                  # ld a,$02
+    CALL,       SET_MUSIC_VOLUME,   # call setMusicVolume
+    ]
+
+NEW_OPEN_MENU0_ASM = list(ORIG_OPEN_MENU0_ASM)
+NEW_OPEN_MENU0_ASM[-1] = OPEN_MENU1
+
+OPEN_MENU1_ASM = [
+    CALL,       SET_MUSIC_VOLUME,   # call setMusicVolume
+    LD_A_A16,   RING_MENU_MODE,     # ld a,(wRingMenu_mode)
+    BIT7_A,                         # bit 7,a
+    RET_Z,                          # ret z
+    RES7_A,                         # res 7,a
+    LD_A16_A,   RING_MENU_MODE,     # ld (wRingMenu_mode),a
+    # graphics were already saved, so if we're entering the ring menu
+    # from within another menu we don't want to save the graphics again.
+    # avoid this by using stack manipulation to jump out of the parent call
+    POP_AF,                         # pop af
+    RET,                            # ret
     ]

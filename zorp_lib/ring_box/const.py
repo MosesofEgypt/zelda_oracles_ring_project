@@ -44,6 +44,8 @@ PATCH_BANKS = dict(
 
     RING_BOX_MENU0              = 2,
     RING_BOX_MENU1              = 2,
+    OPEN_MENU0                  = 2,
+    OPEN_MENU1                  = 2,
     )
 AGES_PATCH_BANKS = dict(
     BOX_CAPACITY3               = 30,

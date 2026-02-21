@@ -233,6 +233,8 @@ def prepare_ring_list_reorg_patches(**kw):
 def prepare_box_menu_patches(**kw):
     update_mappings(**kw)
     patch_data = [
+        [OPEN_MENU1,     asm.OPEN_MENU1_ASM],
+        [OPEN_MENU0,     asm.NEW_OPEN_MENU0_ASM, asm.ORIG_OPEN_MENU0_ASM],
         [RING_BOX_MENU1, asm.RING_BOX_MENU1_ASM],
         [RING_BOX_MENU0, asm.NEW_RING_BOX_MENU0_ASM, asm.ORIG_RING_BOX_MENU0_ASM],
         ]
