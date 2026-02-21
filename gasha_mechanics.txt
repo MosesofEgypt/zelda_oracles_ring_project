@@ -1,17 +1,21 @@
 How the tier is determined for Gasha rings
 
-   1:  the first gasha nut is always a heart piece, while all
+   1:  every gasha spot is eqivalent to each other, meaning
+       there are no longer "good" and "bad" spots. they all
+       produce the same tiers based on the formula below.
+
+   2:  the first gasha nut is always a heart piece, while all
        other harvests will ONLY ever produce rings.
 
-   2:  tiers in the table below are ordered from worst to best, 
+   3:  tiers in the table below are ordered from worst to best, 
        with the secret tier4 only being available once all the 
        other tiers are completed.
 
-   3:  each tier has 11 rings(except the secret tier4), with
+   4:  each tier has 11 rings(except the secret tier4), with
        each ring having different weights to determine its
        rarity within that tier.
 
-   4:  the way tiers are chosen is first the lowest guaranteed
+   5:  the way tiers are chosen is first the lowest guaranteed
        tier is determined(i.e. the highest tier that the kill
        count is above its maximum). for each tier that the kill
        count is between the min and max, there is a 50% chance
