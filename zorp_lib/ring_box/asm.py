@@ -1063,8 +1063,10 @@ RING_BOX_MENU1_ASM = [
     CALL,       PLAY_SOUND,             # call playSound
     LD_A,       0x81,                   # ld a,RING_MENU_TYPE_LIST | 0x80
     LD_A16_A,   RING_MENU_MODE,         # ld (wRingMenu_mode),a
+    XOR_A,                              # xor a
+    LD_A16_A,   SUBMENU_STATE,          # ld (wSubmenuState),a
+    LD_A16_A,   RING_MENU_PAGE,         # ld (ringMenuPage),a
     LD_A,       MENU_TYPE_RINGS,        # ld a,$04
-    LD_A16_A,   OPENED_MENU_TYPE,       # ld (wOpenedMenuType),a
     CALL,       OPEN_MENU,              # call openMenu
     # set the camera coords to zero or it messes up text rendering
     XOR_A,                              # xor a
