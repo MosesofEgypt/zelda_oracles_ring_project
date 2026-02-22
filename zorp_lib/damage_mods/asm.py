@@ -476,8 +476,8 @@ ORIG_CURSE_ARMOR_RING_ICON_ASM = [
     b'\xde\x06\xdd\x06',
     ]
 NEW_CURSE_ARMOR_RING_ICON_ASM  = [
-    b'\xae\x03\xbe\x02',
-    b'\xa1\x02\xbf\x02',
+    b'\xae\x03\xbe\x03',
+    b'\xa1\x03\xbf\x03',
     ]
 
 ORIG_CURSE_POWER_RING_ICON_ASM = [

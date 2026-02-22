@@ -163,51 +163,52 @@ REMOTE_BOMB1_ASM = [
     ]
 
 ORIG_REMOTE_BOMB2_ASM = [
-    b'\xca',CLEAR_PARENT_ITEM,       # jp z,clearParentItem
-    b'\xcd',ITEM_LOAD_ANIM_INC_STATE,# call parentItemLoadAnimationAndIncState
-    b'\x1e\x01',                     # ld e,$01
-    b'\x3e',BOMBERS_RING,            # ld a,BOMBERS_RING
-    b'\xcd',CP_ACTIVE_RING0,         # call cpActiveRing
-    b'\x20\x01',                     # jr nz,+
-    b'\x1c',                         #   inc e
+    JP_Z,   CLEAR_PARENT_ITEM,       # jp z,clearParentItem
+    CALL,   ITEM_LOAD_ANIM_INC_STATE,# call parentItemLoadAnimationAndIncState
+    LD_E,   1,                       # ld e,$01
+    LD_A,   BOMBERS_RING,            # ld a,BOMBERS_RING
+    CALL,   CP_ACTIVE_RING0,         # call cpActiveRing
+    JR_NZ,  "-",                     # jr nz,+
+    INC_E,                           #   inc e
+    Label("-"),
     ]
 NEW_REMOTE_BOMB2_ASM    = [
-    b'\xcd',REMOTE_BOMB3,   # call remoteBomb3
-    b'\x00'*2,              # nop
-    b'\x1e\x01',            # ld e,$01
-    b'\x3e',BOMBERS_RING,   # ld a,BOMBERS_RING
-    b'\xcd',CP_ACTIVE_RING0,# call cpActiveRing
-    b'\x20\x02',            # jr nz,+
-    b'\x1e\x04',            #   ld e,$04
+    CALL,   REMOTE_BOMB3,   # call remoteBomb3
+    NOP,    NOP,            # nop
+    LD_E,   1,              # ld e,$01
+    LD_A,   BOMBERS_RING,   # ld a,BOMBERS_RING
+    CALL,   CP_ACTIVE_RING0,# call cpActiveRing
+    JR_NZ,  "-",            # jr nz,+
+        LD_E,   4,          #   ld e,$04
+    Label("-"),
     ]
 
 REMOTE_BOMB3_ASM = [
-    b'\xf5',                        # push af
-    b'\x01',BOMBERS_RING,PEACE_RING,# ld bc,PEACE_RING,BOMBERS_RING
-    b'\xcd',EITHER_RING,            # call eitherRingActive
-    b'\x20\x09',                    # jr nz,@done
-    b'\x30\x07',                    # jr nc,@done
+    PUSH_AF,                        # push af
+    LD_BC,  BOMBERS_RING,PEACE_RING,# ld bc,PEACE_RING,BOMBERS_RING
+    CALL,   EITHER_RING,            # call eitherRingActive
+    JR_NZ,  "@done",                # jr nz,@done
+    JR_NC,  "@done",                # jr nc,@done
     # check if there's a bomb to remote detonate
-    b'\x0e\x03',                    # ld c,ITEM_BOMB
-    b'\xcd',FIND_ITEM_WITH_ID,      # call findItemWithID
-    b'\x28\x08',                    # jr z,@remoteDetonate
-    # @done
-    b'\xf1',                        # pop af
-    b'\xc8',CLEAR_PARENT_ITEM,      # jp z,clearParentItem
-    b'\xcd',ITEM_LOAD_ANIM_INC_STATE,# call parentItemLoadAnimationAndIncState
-    b'\xc9',                        # ret
-    # @remoteDetonate
-    b'\x2e\x2f',                    # ld l,Item.var2f
+    LD_C,   3,                      # ld c,ITEM_BOMB
+    CALL,   FIND_ITEM_WITH_ID,      # call findItemWithID
+    JR_Z,   "@remoteDetonate",      # jr z,@remoteDetonate
+    Label("@done"),
+    POP_AF,                         # pop af
+    JP_Z,   CLEAR_PARENT_ITEM,      # jp z,clearParentItem
+    JP,    ITEM_LOAD_ANIM_INC_STATE,# jp parentItemLoadAnimationAndIncState
+    Label("@remoteDetonate"),
+    LD_L,   0x2f,                   # ld l,Item.var2f
     # NOTE: we're intentionally mucking with the stack here to make
     #       the return jump out of the bombUpdateAnimation code. This
     #       allows us to add as little code as necessary, as we don't need
     #       to add logic to @bombUpdateAnimation to handle the return there.
-    b'\xf1',                        # pop af
-    b'\xf1',                        # pop af
+    POP_AF,                         # pop af
+    POP_AF,                         # pop af
     # skip if already exploding
-    b'\xcb\x66',                    # bit 4,(hl)
-    b'\xc0',                        # ret nz
+    BIT4_HLP,                       # bit 4,(hl)
+    RET_NZ,                         # ret nz
     # set the bit that indicates to explode
-    b'\xcb\xe6',                    # set 4,(hl)
-    b'\xc3',CLEAR_PARENT_ITEM,      # jp clearParentItem
+    SET4_HLP,                       # set 4,(hl)
+    JP,     CLEAR_PARENT_ITEM,      # jp clearParentItem
     ]
