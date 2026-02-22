@@ -19,7 +19,7 @@ RING_TEXT_SNIPS = [
         ("HEART_RING_L", "Heart Ring L-"),
         ("LIGHT_RING_L", "Light Ring L-"),
         ("RANG_RING_L", "Rang Ring L-"),
-        ("COLOR_RING", " Color Ring"),
+        ("TINT_RING", " Tint Ring"),
         ("LUCK_RING", " Luck Ring"),
         ("HOLY_RING", " Holy Ring"),
         ("JOY_RING", " Joy Ring"),
@@ -149,17 +149,17 @@ RING_TEXT_STRINGS = [
                                  "reduced to {{TXT_HEART}}/4")),
         ("GBA Nature Ring", ("Invin. time +60%"
                              "{CAN_STACK}")),
-        ("{RED}{COLOR_RING}", ("1K beasts slain{{TXT_NEWL}}"
+        ("{RED}{TINT_RING}", ("1K beasts slain{{TXT_NEWL}}"
                                "{BECOME_}{RED}")),
-        ("{GREEN}{COLOR_RING}", ("10K Rupees found{{TXT_NEWL}}"
+        ("{GREEN}{TINT_RING}", ("10K Rupees found{{TXT_NEWL}}"
                                  "{BECOME_}{GREEN}")),
         ("Victory Ring", ("Sword & Shield{{TXT_NEWL}}"
                           "level {{TXT_UP}}")),
-        ("{GOLD}{COLOR_RING}", ("100 signs broken{{TXT_NEWL}}"
+        ("{GOLD}{TINT_RING}", ("100 signs broken{{TXT_NEWL}}"
                                "{BECOME_}{GOLD}")),
-        ("{BLUE}{COLOR_RING}", ("100 rings found{{TXT_NEWL}}"
+        ("{BLUE}{TINT_RING}", ("100 rings found{{TXT_NEWL}}"
                                 "{BECOME_}{BLUE}")),
-        ("GB{COLOR_RING}",  ("This is now a{{TXT_NEWL}}"
+        ("GBC {TINT_RING}",  ("This is now a{{TXT_NEWL}}"
                               "Game Boy Color!")),
         ("{GASHA} Ring", ("Grow {GASHA}{{TXT_NEWL}}"
                           "trees quickly")),

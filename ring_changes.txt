@@ -83,7 +83,7 @@ Removed rings:
         The 50% fall damage effect has been moved to the Blue Luck Ring, so this ring is no longer needed.
 
     Whisp Ring:
-        Repurposed for GB Color Ring.
+        Repurposed for GBC Tint Ring.
         Whisp nulling effect has been moved to Red Holy Ring.
 
     Cursed Ring:
@@ -100,7 +100,7 @@ Removed rings:
         Upgraded into Vasu's Ring.
 
     Rupee/Hundredth/Slayers/Sign Ring:
-        Upgraded into Green/Blue/Red/Gold Color Ring.
+        Upgraded into Green/Blue/Red/Gold Tint Ring.
 
 
 New rings:
@@ -150,23 +150,23 @@ New rings:
             * Bomb:     5 Rupees
             * Bombchu:  50 Rupees
 
-    Green Color Ring:
+    Green Tint Ring:
         This is the Rupee Ring, except it changes your color to green.
         Sounds useless, but can combine with another color ring to blend the colors.
 
-    Blue Color Ring:
+    Blue Tint Ring:
         This is the Hundredth Ring, except it changes your color to blue.
         Can combine with another color ring to blend the colors.
 
-    Red Color Ring:
+    Red Tint Ring:
         This is the Slayers Ring, except it changes your color to red.
         Can combine with another color ring to blend the colors.
 
-    Gold Color Ring:
+    Gold Tint Ring:
         This is the Sign Ring, except it changes your color to gold.
         Can combine with another color ring to blend the colors.
 
-    GB Color Ring:
+    GBC Tint Ring:
         Switches the game to GBC mode(i.e. uses darker color palette and advance shop closes.)
 
 
