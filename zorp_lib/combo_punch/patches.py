@@ -18,6 +18,10 @@ def prepare_combo_punch_patches(
         asm.AGES_NEW_PUNCH_CHECK0_ASM  if kw["is_ages"] else
         asm.SEAS_NEW_PUNCH_CHECK0_ASM
         )
+    super_punch3_asm  = (
+        asm.AGES_SUPER_PUNCH3_ASM if kw["is_ages"] else
+        asm.SEAS_SUPER_PUNCH3_ASM
+        )
 
     patch_data = [
         [SUPER_PUNCH0,    asm.NEW_SUPER_PUNCH0_ASM, asm.ORIG_SUPER_PUNCH0_ASM],
@@ -33,7 +37,7 @@ def prepare_combo_punch_patches(
     if ring_stacking:
         patch_data.extend([
             [SUPER_PUNCH1,  asm.SUPER_PUNCH1_ASM],
-            [SUPER_PUNCH3,  asm.SUPER_PUNCH3_ASM],
+            [SUPER_PUNCH3,  super_punch3_asm],
             ])
 
     return [util.alloc_patch(*args, **kw) for args in patch_data]

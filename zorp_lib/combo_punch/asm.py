@@ -1,5 +1,6 @@
 from .const import *
 from ..const import *
+from ..opcodes import *
 from ..shared.const import *
 from ..combo_sword.const import SWORD_BEAM_LIMIT
 
@@ -274,7 +275,7 @@ CREATE_EXPLOSION_IN_FRONT_OF_LINK_ASM = [
     b'\xc1',                       # pop bc
     ]
 
-DO_SUPER_PUNCH_ASM = [
+SEAS_DO_SUPER_PUNCH_ASM = [
     # create an explosion effect
     *CREATE_EXPLOSION_IN_FRONT_OF_LINK_ASM,
     b'\xc5',                       #   push bc
@@ -302,12 +303,14 @@ DO_SUPER_PUNCH_ASM = [
     # @notBreakable
     # destroy the ground and clear dirt if you've obtained the shovel
     b'\x3e\x15',                   #   ld a,TREASURE_SHOVEL
-    b'\xcd',CHECK_HAVE_TREASURE,   #   call checkTreasureObtained
-    b'\x30\x07',                   #   jr nc,@notDiggable
+    CALL,   CHECK_HAVE_TREASURE,   #   call checkTreasureObtained
+    JR_NZ,  "@notDiggable",        #   jr nz,@notDiggable
+    PLACEHOLDER0,
     b'\x3e\x06',                   #     ld a,BREAKABLETILESOURCE_SHOVEL
     b'\xcd',SWORD_TRY_BREAK_TILE,  #     call tryBreakTileWithSword
     b'\xc1',                       #     pop bc
     b'\xc5',                       #     push bc
+    Label("@notDiggable"),
     # @notDiggable
     # cut down trees if you've obtained ember seeds
     b'\x3e\x20',                   #   ld a,TREASURE_EMBER_SEEDS
@@ -322,6 +325,15 @@ DO_SUPER_PUNCH_ASM = [
     # @done
     ]
 
+AGES_DO_SUPER_PUNCH_ASM = list(SEAS_DO_SUPER_PUNCH_ASM)
+tmp_idx = AGES_DO_SUPER_PUNCH_ASM.index(PLACEHOLDER0)
+AGES_DO_SUPER_PUNCH_ASM[tmp_idx: tmp_idx+1] = [
+    # no destroying dirt while underwater
+    b'\xfa',W_ACTIVE_COLLISIONS,   #   ld a,(wActiveCollisions)
+    CP,     4,                     #   cp 4
+    JR_Z,  "@notDiggable",         #   jr z,@notDiggable
+    ]
+
 SUPER_PUNCH3_ASM = [
     b'\xc5',                       # push bc
     b'\x01',FIST_RING,EXPERTS_RING,# ld bc,EXPERTS_RING,FIST_RING
@@ -329,8 +341,14 @@ SUPER_PUNCH3_ASM = [
     b'\xc1',                       # pop bc
     b'\x30\x60',                   # jr nc,@notSuperPunch
     b'\x20\x5e',                   # jr nz,@notSuperPunch
-    *DO_SUPER_PUNCH_ASM,
+    PLACEHOLDER0,
     b'\x3e\x03',                   # ld a,BREAKABLETILESOURCE_EXPERTS_RING
     b'\xcd',SWORD_TRY_BREAK_TILE,  # call tryBreakTileWithSword
     b'\xc9',                       # ret
     ]
+
+tmp_idx = SUPER_PUNCH3_ASM.index(PLACEHOLDER0)
+AGES_SUPER_PUNCH3_ASM = list(SUPER_PUNCH3_ASM)
+SEAS_SUPER_PUNCH3_ASM = list(SUPER_PUNCH3_ASM)
+AGES_SUPER_PUNCH3_ASM[tmp_idx: tmp_idx+1] = AGES_DO_SUPER_PUNCH_ASM
+SEAS_SUPER_PUNCH3_ASM[tmp_idx: tmp_idx+1] = SEAS_DO_SUPER_PUNCH_ASM

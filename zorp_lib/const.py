@@ -225,6 +225,7 @@ REPLACE_MAP = dict(
     W_RING_BOX_CURSOR_IDX   = b'\xbd\xcb', # ringBoxCursorIndex
     W4_SUBSCREEN_TEXT_INDICES = b'\xe0\xd3', # w4SubscreenTextIndices
     W4_SUBSCREEN_TEXT_INDICES_PLUS_F = b'\xef\xd3', # w4SubscreenTextIndices+$f
+    FIRST_SIDESCROLL_GROUP  = 6,
     )
 AGES_REPLACE_MAP = dict(
     GET_RANDOM_NUMBER       = b'\x3e\x04', # getRandomNumber
@@ -361,6 +362,7 @@ AGES_REPLACE_MAP = dict(
     OBJ_CLINK_INTERAC       = b'\x81\x4b', # objectCreateClinkInteraction
     RANG_UPDATE_SPEED_ANIM  = b'\xc6\x57', # @updateSpeedAndAnimation
     OBJ_GET_REL_OBJ1_VAR    = b'\x60\x21', # objectGetRelatedObject1Var
+    W_ACTIVE_COLLISIONS     = b'\x33\xcc', # wActiveCollisions
     )
 SEAS_REPLACE_MAP = dict(
     GET_RANDOM_NUMBER       = b'\x1a\x04', # getRandomNumber
@@ -498,6 +500,7 @@ SEAS_REPLACE_MAP = dict(
     OBJ_CLINK_INTERAC       = b'\x69\x4b', # objectCreateClinkInteraction
     RANG_UPDATE_SPEED_ANIM  = b'\x26\x56', # @updateSpeedAndAnimation
     OBJ_GET_REL_OBJ1_VAR    = b'\x1e\x21', # objectGetRelatedObject1Var
+    W_ACTIVE_COLLISIONS     = b'\x4f\xcc', # wActiveCollisions
     )
 
 RING_TEXT_SYMBOLS = dict(
