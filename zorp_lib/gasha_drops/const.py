@@ -1,0 +1,165 @@
+# the banks that the patches should apply to
+PATCH_BANKS = dict(
+    GET_RANDOM_TIERED_RING  = 0,
+
+    GET_RANDOM_TIERED_RING1 = 63,
+    RING_TIER_MASKS         = 63,
+    RING_TIER_TABLE         = 63,
+    RING_TIER0_TABLE        = 63,
+    RING_TIER1_TABLE        = 63,
+    RING_TIER2_TABLE        = 63,
+    RING_TIER3_TABLE        = 63,
+    RING_TIER4_TABLE        = 63,
+    GASHA_MATURITY_TABLE    = 63,
+    GET_RING_TIER_MASK      = 63,
+    GET_RINGS_OBTAINED      = 63,
+    )
+AGES_PATCH_BANKS = dict(
+    SPAWN_GASHA_TREASURE        = 11,
+    GET_RING_TIER_AND_CHANCE    = 11,
+    DETERMINE_GASHA_DROP        = 11,
+    DETERMINE_RING_DROP_TIER    = 11,
+    DEC_GASHA_MATURITY          = 11,
+    )
+SEAS_PATCH_BANKS = dict(
+    SPAWN_GASHA_TREASURE        = 10,
+    GET_RING_TIER_AND_CHANCE    = 10,
+    DETERMINE_GASHA_DROP        = 10,
+    DETERMINE_RING_DROP_TIER    = 10,
+    DEC_GASHA_MATURITY          = 10,
+    )
+
+PADDING_REPLACE_MAP  = {
+    name: b'\x00\x00' for name in set([
+        *PATCH_BANKS, *AGES_PATCH_BANKS, *SEAS_PATCH_BANKS
+        ])
+    }
+
+#####################################################################
+#             How the tier is determined for Gasha rings
+#
+#   1:  the first gasha nut is always a heart piece, while all
+#       other harvests will ONLY ever produce rings.
+#
+#   2:  tiers in the table below are ordered from worst to best, 
+#       with the secret tier4 only being available once all the 
+#       other tiers are completed.
+#
+#   3:  each tier has 11 rings(except the secret tier4), with
+#       each ring having different weights to determine its
+#       rarity within that tier.
+#
+#   4:  the way tiers are chosen is first the lowest guaranteed
+#       tier is determined(i.e. the highest tier that the kill
+#       count is above its maximum). for each tier that the kill
+#       count is between the min and max, there is a 50% chance
+#       to increment to that tier. This means that the chance to
+#       get a given tier is at most 50%, but could be as low as
+#       6.25%(if your kill count falls within all 4 tiers).
+#
+#       TL;DR the odds of getting the highest tier significantly
+#       increase as you skip past tiers, until it's guaranteed.
+#       For example, having 115 kills would guarantee tier0, but
+#       45 would be an equal chance for ONLY a tier3/tier2 ring.
+#
+#  +---------+------------------------------------------------------+
+#  | RingTier|  Kills needed to fall within a tier(multiples of 5)  |
+#  +---------+------------------------------------------------------+
+#  |         | 0   25   50   75   100  125  150  175  200  225  250 |
+#  |         | |    |    |    |    |    |    |    |    |    |    |  |
+#  |         |\|/  \|/  \|/  \|/  \|/  \|/  \|/  \|/  \|/  \|/  \|/ |
+#  +---------+------------------------------------------------------+
+#  |  TIER3  |         #######     |                                |
+#  +---------+------------------------------------------------------+
+#  |  TIER2  |         |########## |                                |
+#  +---------+------------------------------------------------------+
+#  |  TIER1  |         | #############                              |
+#  +---------+------------------------------------------------------+
+#  |  TIER0  |         |  ######################################### |
+#  +---------+------------------------------------------------------+
+#  |         |   /|\  /|\  /|\  /|\  /|\  /|\  /|\  /|\  /|\  /|\   |
+#  |         |    |    |    |    |    |    |    |    |    |    |    |
+#  |         |   15   40   65   90   115  140  165  190  215  240   |
+#  +---------+------------------------------------------------------+
+#
+#####################################################################
+
+#####################################################################
+#   How the "guaranteed-new" chance is determined for Gasha rings
+#
+#   1:  if it's decided that you will receive a guaranteed new ring,
+#       each ring in the selected tier will be checked to see if
+#       you have it(randomly, of course). the probability weights of
+#       each ring in the tier are ignored while searching like this.
+#
+#       if it can't find one in that tier, it will bump to the next
+#       lowest tier and try again. this will continue till the it
+#       hits the lowest tier. if it went from tier0 to tier3 and
+#       still couldn't find one, it will try the secret tier4(has
+#       the green and gold rings).
+#
+#       this essentially means the system does a best-effort attempt
+#       to give you a ring within the tiers you're eligible for, but
+#       won't go outside that(except in the tier4 case).
+#
+#   2:  a random ring always has at least a 6% chance to guarantee
+#       it is new(even if it isn't received through a gasha tree).
+#
+#   3:  the "gasha maturity" value now exclusively determines the
+#       chance to guarantee a ring is new. it does nothing else.
+#
+#   4:  when harvesting a gasha nut, the gasha maturity is reduced
+#       by roughly 25%. by "roughly", I mean the most significant
+#       byte is reduced by 25%(rounded down) of its value, while the
+#       low byte is zeroed out. This leaves room for it to lower by
+#       by a bit more or less than 25%, but not significantly.
+#
+#   5:  the [0,1] chance to guarantee is calculated as follows:
+#
+#           ((gashaMaturity*0.75)/16 + 15)/255
+#
+#       the 0.75 is due to the gasha maturity being reduced first
+#       this means if your gasha maturity is at least 5120 before
+#       harvesting, you have a 100% chance to guarantee a new ring.
+#
+#   6:  here is a reference for what causes the gasha maturity to
+#       increase(NOTE: some values have been changed for this mod).
+#         * using shovel increases by 1
+#         * getting essence increases by 250
+#         * getting heart piece increases by 100
+#         * getting trade item increases by 200
+#         * getting a heart refill pickup increases by 2
+#         * moving screens increases by 5(except load doors)
+#         * playing subrosian bros minigame increases by 30
+#         * playing goron dance hall minigame increases by 30
+#
+#####################################################################
+
+REPLACE_MAP = dict(
+    RING_TIER_3_MAX_KILLS   = 70,
+    RING_TIER_2_MAX_KILLS   = 90,
+    RING_TIER_1_MAX_KILLS   = 110,
+
+    RING_TIER_2_MIN_KILLS   = 45,
+    RING_TIER_1_MIN_KILLS   = 50,
+    RING_TIER_0_MIN_KILLS   = 55,
+    )
+
+globals().update({name: name for name in (*PADDING_REPLACE_MAP, *REPLACE_MAP)})
+
+
+# NOTE: we're going to use this huge space(16 + 250 bytes)
+#       to add all our new code to the rom. we need to define
+#       it so we can find and clear it first though.
+GASHA_SPOT_RANK_TABLE_INFO = dict(
+    ages=dict(start=0x714, size=266, bank=11,
+              md5="1d37818ab8011cac6d34e371bd1a955a"),
+    seas=dict(start=0x991, size=266, bank=10,
+              md5="c04cd8086c1aceb42a6f66ddeda3d6c9"),
+    )
+AGES_BANK_GARBAGE = {
+    0x0b: [GASHA_SPOT_RANK_TABLE_INFO["ages"]],
+    }
+SEAS_BANK_GARBAGE = {
+    0x0a: [GASHA_SPOT_RANK_TABLE_INFO["seas"]],
+    }
