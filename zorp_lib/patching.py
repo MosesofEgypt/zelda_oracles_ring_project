@@ -26,7 +26,7 @@ from .rings_mystic_seed.patches import prepare_mystic_seed_ring_patches
 from .combo_bombs.patches import prepare_combo_bombs_patches
 from .combo_boomerang.patches import prepare_combo_boomerang_patches
 from .combo_collision.patches import prepare_combo_collision_patches
-from .combo_feather.patches import prepare_combo_feather_patches
+from .combo_swimming.patches import prepare_combo_swimming_patches
 from .combo_pickups.patches import prepare_combo_pickups_patches
 from .combo_punch.patches import prepare_combo_punch_patches
 from .combo_sword.patches import prepare_combo_sword_patches
@@ -165,7 +165,7 @@ def apply_patches(filepath, verify=True):
                 prepare_combo_bombs_patches,
                 prepare_combo_boomerang_patches,
                 prepare_combo_collision_patches,
-                prepare_combo_feather_patches,
+                prepare_combo_swimming_patches,
                 prepare_combo_pickups_patches,
                 prepare_combo_punch_patches,
                 prepare_combo_sword_patches,

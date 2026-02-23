@@ -32,6 +32,7 @@ Combo Effects:
 
     8:  Dolphin Link:
         Enables use of most items while swimming in shallow water(including the feather).
+        Also enables use of items in slot B while underwater(does not prevent you from surfacing).
         Link must first dive so he appears as a shadow(prevents players from jumping whirlpools).
 
     9:  Acrobat Link:

@@ -77,7 +77,7 @@ ORIG_SWIMMERS_RING0_ASM = [
     OR_A,                                   # or a
     JR_NZ,      "+",                        # jr nz,+
     LD_A_A16,   W_GAME_KEYS_JUST_PRESSED,   # ld a,(wGameKeysJustPressed)
-    AND,        0x10 | 0x20 | 0x40 | 0x80,  # and (BTN_RIGHT | BTN_LEFT | BTN_UP | BTN_DOWN)
+    AND,        BTN_UDLR,                   # and (BTN_RIGHT | BTN_LEFT | BTN_UP | BTN_DOWN)
     JR_NZ,      "@directionButtonPressed",  # jr nz,@directionButtonPressed
     Label("+"),
     LD_L,       0x3e,                       # ld l,SpecialObject.var3e
@@ -358,10 +358,10 @@ TOSS_RING_TEST1_ASM = [
     ]
 
 ORIG_PUNCH_WITH_ITEM_ASM = [
-    b'\x2e',INVENTORY_B,# ld l,<wInventoryB
-    b'\x2a',            # ldi a,(hl)
-    b'\xb6',            # or (hl)
-    b'\xc0',            # ret nz
+    b'\x2e',W_INVENTORY_B_L,# ld l,<wInventoryB
+    b'\x2a',                # ldi a,(hl)
+    b'\xb6',                # or (hl)
+    b'\xc0',                # ret nz
     ]
 NEW_PUNCH_WITH_ITEM_ASM = [
     # replace with a bunch of nops

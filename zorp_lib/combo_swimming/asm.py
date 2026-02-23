@@ -1,4 +1,5 @@
 from .const import *
+from ..opcodes import *
 from ..const import *
 from ..shared.const import *
 
@@ -17,25 +18,25 @@ NEW_SWIM_CHECK_ASM = [
     b'\x20\x05',              # jr nz,+
     ]
 
-ORIG_FEATHER_CHECK0_ASM = [
+ORIG_SWIMMING_CHECK0_ASM = [
     b'\x21',W_LINK_SWIMMING_STATE,# ld hl,wLinkSwimmingState
     b'\x2a',                      # ldi a,(hl)
     b'\xb6',                      # or (hl)
-    b'\x20',FEATHER_DELETE_PARENT,# jr nz,@deleteParent
+    b'\x20',ITEM_DELETE_PARENT,   # jr nz,@deleteParent
     ]
-NEW_FEATHER_CHECK0_ASM = (
+NEW_SWIMMING_CHECK0_ASM = (
     b'\xcd',LINK_DIVING_CHECK,    # call linkDivingCheck
     b'\x00'*2,                    # nop
-    b'\x20',FEATHER_DELETE_PARENT,# jr nz,@deleteParent
+    b'\x20',ITEM_DELETE_PARENT,   # jr nz,@deleteParent
     )
 
-ORIG_FEATHER_CHECK1_ASM = [
+ORIG_SWIMMING_CHECK1_ASM = [
     b'\xfa',W_LINK_SWIMMING_STATE,# ld a,(wLinkSwimmingState)
     b'\xb7',                      # or a
     b'\x28',PARENT_ITEM_CHECK_AB, # jr z,@checkAB
     b'\x18',UPDATE_PARENT_ITEMS,  # jr @updateParentItems
     ]
-NEW_FEATHER_CHECK1_ASM = (
+NEW_SWIMMING_CHECK1_ASM = (
     b'\xcd',LINK_DIVING_CHECK,    # call linkDivingCheck
     b'\x00',                      # nop
     b'\x28',PARENT_ITEM_CHECK_AB, # jr z,@checkAB
@@ -64,4 +65,39 @@ LINK_DIVING_CHECK_ASM = [
     # @notADolphin
     b'\xb7',                        # or a
     b'\xc9',                        # ret
+    ]
+
+ORIG_UNDERWATER_ITEM_B0_ASM = [
+    BIT6_A,                         # bit TILESETFLAG_BIT_UNDERWATER,a
+    JR_Z,   "@normal",              # jr z,@normal
+
+    # @underwater:
+    LD_DE,  W_INVENTORY_A_L,  BTN_A,# ldde BTN_A, <wInventoryA
+    CALL,   CHECK_ITEM_USED,        # call checkItemUsed
+    JR,     0x21,                   # jr @updateParentItems
+    Label("@normal"),
+    ]
+
+NEW_UNDERWATER_ITEM_B0_ASM = list(ORIG_UNDERWATER_ITEM_B0_ASM)
+NEW_UNDERWATER_ITEM_B0_ASM[:3] = [
+    CALL,   UNDERWATER_ITEM_B1, # call underwaterItemB1
+    RET_Z,                      # ret z
+    ]
+
+UNDERWATER_ITEM_B1_ASM = [
+    BIT6_A,                             # bit TILESETFLAG_BIT_UNDERWATER,a
+    JR_Z,   "@doNormal",                # jr z,@doNormal
+        PUSH_BC,                        #   push bc
+        LD_BC,  SWIMMERS_RING,ZORA_RING,#   ld bc,SWIMMERS_RING,ZORA_RING
+        CALL,   EITHER_RING,            #   call eitherRingActive
+        POP_BC,                         #   pop bc
+        RET_NZ,                         #   ret nz
+        JR_C,   "@doNormal",            #   jr c,@doNormal
+        OR,     1,                      #   or a,1
+        RET,                            #   ret
+    Label("@doNormal"),
+    # NOTE: it just so happens that this is the code we need to jump to
+    CALL,   SWIMMING_CHECK1,            # call swimmingCheck1
+    XOR_A,                              # xor a
+    RET,                                # ret
     ]
