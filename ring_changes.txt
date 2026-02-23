@@ -195,6 +195,9 @@ Modified rings:
     Bomber's Ring:
         Up to 4 bombs can be set at once.
 
+    Swimmer's Ring:
+        Swimming with Mermaid suit no longer requires tapping button(auto-mashing).
+
     Green/Blue/Red Luck Ring:
         Provides a 30% chance to reduce damage from a hit to 0.
 
