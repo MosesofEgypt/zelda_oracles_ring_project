@@ -363,6 +363,8 @@ AGES_REPLACE_MAP = dict(
     RANG_UPDATE_SPEED_ANIM  = b'\xc6\x57', # @updateSpeedAndAnimation
     OBJ_GET_REL_OBJ1_VAR    = b'\x60\x21', # objectGetRelatedObject1Var
     W_ACTIVE_COLLISIONS     = b'\x33\xcc', # wActiveCollisions
+    W_GAME_KEYS_PRESSED     = b'\x29\xcc', # wGameKeysPressed
+    W_GAME_KEYS_JUST_PRESSED= b'\x2a\xcc', # wGameKeysJustPressed
     )
 SEAS_REPLACE_MAP = dict(
     GET_RANDOM_NUMBER       = b'\x1a\x04', # getRandomNumber
@@ -501,6 +503,8 @@ SEAS_REPLACE_MAP = dict(
     RANG_UPDATE_SPEED_ANIM  = b'\x26\x56', # @updateSpeedAndAnimation
     OBJ_GET_REL_OBJ1_VAR    = b'\x1e\x21', # objectGetRelatedObject1Var
     W_ACTIVE_COLLISIONS     = b'\x4f\xcc', # wActiveCollisions
+    W_GAME_KEYS_PRESSED     = b'\x45\xcc', # wGameKeysPressed
+    W_GAME_KEYS_JUST_PRESSED= b'\x46\xcc', # wGameKeysJustPressed
     )
 
 RING_TEXT_SYMBOLS = dict(

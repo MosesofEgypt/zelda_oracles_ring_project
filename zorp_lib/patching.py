@@ -64,47 +64,50 @@ def apply_patch(rom_file, name, old, new, offset, *,
                 is_ages=False, verify=True,
                 replace_map={}, patch_banks={}):
     err_msg = ""
-    data_to_find  = (None if old is None else
-                     util.serialize_patch(old, replace_map))
+    to_find  = (None if old is None else
+                util.serialize_patch(old, replace_map))
     if new is None:
-        skip, data_to_write = True, None
+        skip, to_write = True, None
     else:
-        skip, data_to_write = False, util.serialize_patch(new, replace_map)
+        skip, to_write = False, util.serialize_patch(new, replace_map)
 
     if offset is None:
         offset = util.find_sig(
-            rom_file, data_to_find, name, is_ages,
+            rom_file, to_find, name, is_ages,
             replace_map, patch_banks
             )
 
     if skip:
-        print(f"\tSkipped({name})\t - {len(data_to_find)} bytes @ {offset}")
+        print(f"\tSkipped({name})\t - {len(to_find)} bytes @ {offset}")
         return
 
     if offset < 0:
-        err_msg = "code signature not found"
+        err_msg = "code signature not found.\n" + (
+            "" if to_find is None else
+            " 0x".join(["", *("%02x" % c for c in to_find)]).strip()
+            )
     elif verify and old is not None:
         # check to ensure the data at the offset is what we expect
         rom_file.seek(offset)
-        data_found = rom_file.read(len(data_to_find))
-        if data_to_find != data_found:
+        found = rom_file.read(len(to_find))
+        if to_find != found:
             err_msg = "data found does not match expected"
 
-        elif len(data_to_find) != len(data_to_write):
+        elif len(to_find) != len(to_write):
             err_msg = "length mismatch between patch(%i) and target(%i)" % (
-                len(data_to_write), len(data_to_find)
+                len(to_write), len(to_find)
                 )
 
     if not err_msg:
         rom_file.seek(offset)
-        rom_file.write(data_to_write)
+        rom_file.write(to_write)
         rom_file.flush()
 
     if err_msg:
-        print(f"\tFailure({name})\t - {len(data_to_write)} bytes @ {offset}\n"
+        print(f"\tFailure({name})\t - {len(to_write)} bytes @ {offset}\n"
               f"\t\t{err_msg}")
     else:
-        print(f"\tSuccess({name})\t - {len(data_to_write)} bytes @ {offset}")
+        print(f"\tSuccess({name})\t - {len(to_write)} bytes @ {offset}")
 
 
 def apply_patches(filepath, verify=True):

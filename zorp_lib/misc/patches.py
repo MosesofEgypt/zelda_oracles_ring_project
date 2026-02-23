@@ -29,7 +29,9 @@ def prepare_misc_patches(**kw):
         [BOMB_RADIUS0,    asm.NEW_BOMB_RADIUS0_ASM,     asm.ORIG_BOMB_RADIUS0_ASM],
         [PUNCH_WITH_ITEM, asm.NEW_PUNCH_WITH_ITEM_ASM,  asm.ORIG_PUNCH_WITH_ITEM_ASM],
         ]
-    kw.get("is_ages") and patch_data.append(
-        [SOMARIA_PRIO, asm.NEW_SOMARIA_PRIORITY_ASM, asm.ORIG_SOMARIA_PRIORITY_ASM]
-        )
+    kw.get("is_ages") and patch_data.extend([
+        [SOMARIA_PRIO,    asm.NEW_SOMARIA_PRIORITY_ASM, asm.ORIG_SOMARIA_PRIORITY_ASM],
+        [SWIMMERS_RING1,  asm.SWIMMERS_RING1_ASM],
+        [SWIMMERS_RING0,  asm.NEW_SWIMMERS_RING0_ASM,   asm.ORIG_SWIMMERS_RING0_ASM],
+        ])
     return [util.alloc_patch(*args, **kw) for args in patch_data]

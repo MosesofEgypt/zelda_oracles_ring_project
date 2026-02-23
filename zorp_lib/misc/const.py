@@ -31,6 +31,9 @@ PATCH_BANKS = dict(
     DISCOVERY_RING1 = 63,
     )
 AGES_PATCH_BANKS = dict(
+    SWIMMERS_RING0  = 5,
+    SWIMMERS_RING1  = 5,
+
     SOMARIA_PRIO    = 6,
     )
 SEAS_PATCH_BANKS = dict()
