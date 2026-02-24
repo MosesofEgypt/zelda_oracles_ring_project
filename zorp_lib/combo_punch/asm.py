@@ -363,7 +363,7 @@ ORIG_BRACELET_PUNCH0_ASM = [
     Label("++"),
     LD_A_A16,   LINK_DIRECTION,         # ld a,(w1Link.direction)
     OR, 0x80,                           # or $80
-    LD_A16_A,   W_BRACELET_NOT_GRABING, # ld (wBraceletGrabbingNothing),a
+    LD_A16_A,   W_BRACELET_NOT_GRABBING, # ld (wBraceletGrabbingNothing),a
     RET,                                # ret
     ]
 NEW_BRACELET_PUNCH0_ASM = list(ORIG_BRACELET_PUNCH0_ASM)
@@ -373,7 +373,7 @@ NEW_BRACELET_PUNCH0_ASM[-3:-1] = [
 
 BRACELET_PUNCH1_ASM = [
     PUSH_BC,                                # push bc
-    LD_A16_A,   W_BRACELET_NOT_GRABING,     # ld (wBraceletGrabbingNothing),a
+    LD_A16_A,   W_BRACELET_NOT_GRABBING,    # ld (wBraceletGrabbingNothing),a
     LD_BC,      FIST_RING,EXPERTS_RING,     # ld bc,EXPERTS_RING,FIST_RING
     CALL,       EITHER_RING,                # call eitherRingActive
     JR_C,       "@punch",                   # jr c,@punch

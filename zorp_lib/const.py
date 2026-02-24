@@ -382,7 +382,7 @@ AGES_REPLACE_MAP = dict(
     W_GAME_KEYS_JUST_PRESSED= b'\x2a\xcc', # wGameKeysJustPressed
     CHECK_ITEM_USED         = b'\x54\x49', # checkItemUsed
     SWORD_PARENT_CODE       = b'\xc6\x4a', # parentItemCode_punch
-    W_BRACELET_NOT_GRABING  = b'\x64\xcc', # wBraceletGrabbingNothing
+    W_BRACELET_NOT_GRABBING = b'\x64\xcc', # wBraceletGrabbingNothing
     )
 SEAS_REPLACE_MAP = dict(
     GET_RANDOM_NUMBER       = b'\x1a\x04', # getRandomNumber
@@ -527,7 +527,7 @@ SEAS_REPLACE_MAP = dict(
     W_GAME_KEYS_JUST_PRESSED= b'\x46\xcc', # wGameKeysJustPressed
     CHECK_ITEM_USED         = b'\xf3\x48', # checkItemUsed
     SWORD_PARENT_CODE       = b'\x6b\x4a', # parentItemCode_punch
-    W_BRACELET_NOT_GRABING  = b'\x7f\xcc', # wBraceletGrabbingNothing
+    W_BRACELET_NOT_GRABBING = b'\x7f\xcc', # wBraceletGrabbingNothing
     )
 
 RING_TEXT_SYMBOLS = dict(
