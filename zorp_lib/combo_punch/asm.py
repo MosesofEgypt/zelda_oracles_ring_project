@@ -352,3 +352,50 @@ AGES_SUPER_PUNCH3_ASM = list(SUPER_PUNCH3_ASM)
 SEAS_SUPER_PUNCH3_ASM = list(SUPER_PUNCH3_ASM)
 AGES_SUPER_PUNCH3_ASM[tmp_idx: tmp_idx+1] = AGES_DO_SUPER_PUNCH_ASM
 SEAS_SUPER_PUNCH3_ASM[tmp_idx: tmp_idx+1] = SEAS_DO_SUPER_PUNCH_ASM
+
+
+
+ORIG_BRACELET_PUNCH0_ASM = [
+    JR_NZ,      "++",                   # jr nz,++
+    LD_A,       0x41,                   # ld a,$41
+    LD_A16_A,   W_LINK_GRAB_STATE,      # ld (wLinkGrabState),a
+    JP, ITEM_LOAD_ANIM_INC_STATE,       # jp parentItemLoadAnimationAndIncState
+    Label("++"),
+    LD_A_A16,   LINK_DIRECTION,         # ld a,(w1Link.direction)
+    OR, 0x80,                           # or $80
+    LD_A16_A,   W_BRACELET_NOT_GRABING, # ld (wBraceletGrabbingNothing),a
+    RET,                                # ret
+    ]
+NEW_BRACELET_PUNCH0_ASM = list(ORIG_BRACELET_PUNCH0_ASM)
+NEW_BRACELET_PUNCH0_ASM[-3:-1] = [
+    CALL,   BRACELET_PUNCH1
+    ]
+
+BRACELET_PUNCH1_ASM = [
+    PUSH_BC,                                # push bc
+    LD_A16_A,   W_BRACELET_NOT_GRABING,     # ld (wBraceletGrabbingNothing),a
+    LD_BC,      FIST_RING,EXPERTS_RING,     # ld bc,EXPERTS_RING,FIST_RING
+    CALL,       EITHER_RING,                # call eitherRingActive
+    JR_C,       "@punch",                   # jr c,@punch
+    JR_Z,       "@punch",                   # jr z,@punch
+    POP_BC,                                 # pop bc
+    RET,                                    # ret
+
+    Label("@punch"),
+    # make sure the button was just pressed so we can't rapid-fire punch
+    LD_E,       3,                          # ld e,Item.var03
+    LD_A_DEP,                               # ld a,(de)
+    LD_B_A,                                 # ld b,a
+    LD_A_A16,   W_GAME_KEYS_JUST_PRESSED,   # ld a,wGameKeysJustPressed
+    CP_B,                                   # cp b
+    POP_BC,                                 # pop bc
+    RET_NZ,                                 # ret nz
+
+    # not grabbing anything, so act as if link is unequipped and try punching
+    # change the item type to punch and run the item code for it
+    LD_A,       2,                          # ld a,ITEM_PUNCH
+    LD_E,       1,                          # ld e,Item.id
+    LD_DEP_A,                               # ld (de),a
+    CALL,       SWORD_PARENT_CODE,          # call swordParentCode
+    RET,                                    # ret
+    ]

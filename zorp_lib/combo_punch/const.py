@@ -7,10 +7,14 @@ PATCH_BANKS = dict(
     PUNCH_CHECK0    = 6,
     PUNCH_CHECK1    = 6,
 
+    BRACELET_PUNCH0 = 6,
+    BRACELET_PUNCH1 = 6,
+
     HADOUKEN_SEED0  = 7,
     HADOUKEN_SEED1  = 7,
     HADOUKEN_SEED2  = 7,
     HADOUKEN_SEED3  = 7,
+
     SUPER_PUNCH0    = 7,
     SUPER_PUNCH1    = 7,
     SUPER_PUNCH2    = 7,
