@@ -182,6 +182,7 @@ Modified rings:
 
     Fist/Experts Ring:
         Works with only 1 item slot empty instead of requiring both.
+        Also works by using bracelet with nothing to grab/pickup nearby.
 
     Blast Ring:
         Increases blast radius by 2x
@@ -220,7 +221,3 @@ Modified rings:
         Upgrades your sword and shield level.
         1 -> 2   and 2 -> 3
         Does not go past Master Sword
-
-    Fist Ring/Expert's Ring:
-        Can punch with bracelet equipped now.
-        Works by using bracelet with nothing to grab/pickup nearby.
