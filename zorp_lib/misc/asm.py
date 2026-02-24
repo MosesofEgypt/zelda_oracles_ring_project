@@ -214,34 +214,39 @@ ORIG_HASTE_RING0_ASM = [
 NEW_HASTE_RING0_ASM = list(ORIG_HASTE_RING0_ASM)
 NEW_HASTE_RING0_ASM[:3] = b'\xcd', HASTE_RING1
 HASTE_RING1_ASM = [
-    b'\x3e',HASTE_RING,     # ld a,HASTE_RING
-    b'\xcd',CP_ACTIVE_RING0,# call cpActiveRing
+    # don't use the ring if link is being force-moved(i.e. during a cutscene)
+    LD_A_A16,   W_LINK_FORCE_STATE, # ld a,(wLinkForceState)
+    OR_A,                           # or a
+    JR_NZ,      "@notJogging",      # jr nz,@notJogging
 
-    b'\x20\x1a',            # jr nz,@notJogging
-    b'\x78',                # ld a,b
-    b'\xfe\x03',            # cp $03
-    b'\x20\x02',            # jr nz,@notStairs
+    LD_A,       HASTE_RING,         # ld a,HASTE_RING
+    CALL,       CP_ACTIVE_RING0,    # call cpActiveRing
+
+    JR_NZ,      "@notJogging",      # jr nz,@notJogging
+    LD_A_B,                         # ld a,b
+    CP,         3,                  # cp $03
+    JR_NZ,      "@notStairs",       # jr nz,@notStairs
     # upgrade stairs to grass
-    b'\x06\x02',            # ld b,$02
-    # @notStairs
-    b'\xfe\x02',            # cp $02
-    b'\x20\x02',            # jr nz,@notGrass
+    LD_B,       2,                  # ld b,$02
+    Label("@notStairs"),
+    CP,         2,                  # cp $02
+    JR_NZ,      "@notGrass",        # jr nz,@notGrass
     # upgrade grass to normal
-    b'\x06\x04',            # ld b,$04
-    # @notGrass
-    b'\xfe\x04',            # cp $04
-    b'\x20\x09',            # jr nz,@notJogging
-    b'\x7b',                # ld a,e
-    b'\xfe\x03',            # cp $03
-    b'\x28\x04',            # jr z,@notJogging
+    LD_B,       4,                  # ld b,$04
+    Label("@notGrass"),
+    CP,         4,                  # cp $04
+    JR_NZ,      "@notJogging",      # jr nz,@notJogging
+    LD_A_E,                         # ld a,e
+    CP,         3,                  # cp $03
+    JR_Z,       "@notJogging",      # jr z,@notJogging
     # upgrade normal to pegasus grass
-    b'\x06\x02',            # ld b,$02
-    b'\x1e\x03',            # ld e,$03
-    # @notJogging
-    b'\x7b',                # ld a,e
-    b'\x80',                # add b
-    b'\x81',                # add c
-    b'\xc9',                # ret
+    LD_B,       2,                  # ld b,$02
+    LD_E,       3,                  # ld e,$03
+    Label("@notJogging"),
+    LD_A_E,                         # ld a,e
+    ADD_B,                          # add b
+    ADD_C,                          # add c
+    RET,                            # ret
     ]
 
 ORIG_ADVANCE_RING0_ASM = [
