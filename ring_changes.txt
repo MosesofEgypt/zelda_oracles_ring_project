@@ -220,3 +220,7 @@ Modified rings:
         Upgrades your sword and shield level.
         1 -> 2   and 2 -> 3
         Does not go past Master Sword
+
+    Fist Ring/Expert's Ring:
+        Can punch with bracelet equipped now.
+        Works by using bracelet with nothing to grab/pickup nearby.
