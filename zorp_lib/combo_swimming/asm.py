@@ -44,27 +44,44 @@ NEW_SWIMMING_CHECK1_ASM = (
     )
 
 LINK_DIVING_CHECK_ASM = [
-    b'\xfa',W_LINK_SWIMMING_STATE,  # ld a,(wLinkSwimmingState)
-    b'\xfe\x00',                    # cp $00
-    b'\xc8',                        # ret z
-    b'\xc5',                        # push bc
-    b'\x01',SWIMMERS_RING,ZORA_RING,# ld bc,SWIMMERS_RING,ZORA_RING
-    b'\xcd',EITHER_RING,            # call eitherRingActive
-    b'\xc1',                        # pop bc
-    b'\x20\x02',                    # jr nz,@maybeADolphin
-    b'\x38\x0a',                    # jr c,@isADolphin
-    # @maybeADolphin
-    b'\x3e',ROCS_RING,              # ld a,ROCS_RING
-    b'\xcd',CP_ACTIVE_RING0,        # call cpActiveRing
-    b'\xfa',W_LINK_SWIMMING_STATE,  # ld a,(wLinkSwimmingState)
-    b'\x20\x05',                    # jr nz,@notADolphin
-    # @isADolphin
-    b'\xe6\x80',                    # and $80
-    b'\x2f',                        # cpl
-    b'\xe6\x80',                    # and $80
-    # @notADolphin
-    b'\xb7',                        # or a
-    b'\xc9',                        # ret
+    LD_A_A16,   W_LINK_SWIMMING_STATE,  # ld a,(wLinkSwimmingState)
+    OR_A,                               # or a
+    RET_Z,                              # ret z
+    PUSH_BC,                            # push bc
+    LD_B,       0,                      # ld b,0
+    LD_A,       SWIMMERS_RING,          # ld a,SWIMMERS_RING
+    CALL,       CP_ACTIVE_RING0,        # call cpActiveRing
+    JR_NZ,      "+",                    # jr nz,+
+        INC_B,                          #   inc b
+
+    Label("+"),
+    LD_A,       ZORA_RING,              # ld a,ZORA_RING
+    CALL,       CP_ACTIVE_RING0,        # call cpActiveRing
+    JR_NZ,      "++",                   # jr nz,++
+        INC_B,                          #   inc b
+
+    Label("++"),
+    LD_A,       ROCS_RING,              # ld a,ROCS_RING
+    CALL,       CP_ACTIVE_RING0,        # call cpActiveRing
+    JR_NZ,      "+++",                  # jr nz,+++
+        INC_B,                          #   inc b
+
+    Label("+++"),
+    LD_A,       0x4A,                   # ld a,TREASURE_MERMAID_SUIT
+    CALL,       CHECK_HAVE_TREASURE,    # call checkTreasureObtained
+    JR_NC,      "++++",                 # jr nc,++++
+        INC_B,                          #   inc b
+
+    Label("++++"),
+    LD_A_B,                             # ld a,b
+    POP_BC,                             # pop bc
+    CP,         2,                      # cp 2
+    JR_NC,      "@isADolphin",          # jr nc,@isADolphin
+
+    RET,                                # ret
+    Label("@isADolphin"),
+    XOR_A,                              # xor a
+    RET,                                # ret
     ]
 
 ORIG_UNDERWATER_ITEM_B0_ASM = [

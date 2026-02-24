@@ -84,9 +84,11 @@ Combo Requirements:
     7:  Heart Ring L-1 and/or L-2 + Blue Joy Ring  or
         Heart Ring L-1 and/or L-2 + Gold Joy Ring  or
         Heart Ring L-1 and/or L-2 + Blue Joy Ring + Gold Joy Ring
-    8:  Zora Ring  + Swimmer's Ring or
-        Zora Ring  + Roc's Ring     or
-        Roc's Ring + Swimmer's Ring
+    8:  Any combination of two of the following:
+        Swimmer's Ring
+        Mermaid Suit
+        Roc's Ring
+        Zora Ring
     9:  Roc's Ring + Steadfast Ring
     10: Roc's Ring + Steadfast Ring + Expert's Ring
     11: Expert's Ring + Fist Ring
