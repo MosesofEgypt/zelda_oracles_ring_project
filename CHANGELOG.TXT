@@ -1,0 +1,16 @@
+1.0.1
+    Added:
+        Swimmer's Ring enables auto-mash movement with Mermaid suit
+        Punch rings can be used with bracelet/glove if nothing to grab is near
+
+    Changed:
+        Dolphin-Link ring combo allows use of B item while underwater
+        Loosened requirements to enable Dolphin-Link ring combo
+
+    Fixed:
+        Kenpo Master Link ring combo no longer destroys dirt tiles underwater
+        Haste ring no longer increases speed when link is doing forced movement(screwed up cutscenes)
+        Link now uses un-transformed swimming sprites when transform rings are equipped
+
+1.0.0
+    Initial release

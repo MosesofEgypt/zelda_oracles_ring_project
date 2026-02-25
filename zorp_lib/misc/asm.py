@@ -1,5 +1,6 @@
 from .const import *
 from ..const import *
+from ..opcodes import *
 from ..shared.const import *
 from ..combo_bombs.asm import MINING_BOMB4_ASM as NEW_BOMB_RADIUS2_ASM, BLAST_Z
 
@@ -71,6 +72,49 @@ NEW_STEADFAST_RING0_ASM = list(ORIG_STEADFAST_RING0_ASM)
 NEW_STEADFAST_RING0_ASM[:2] = [
     b'\xcd', STEADFAST_RING1, # call steadfastRing1
     ]
+
+ORIG_SWIMMERS_RING0_ASM = [
+    OR_A,                                   # or a
+    JR_NZ,      "+",                        # jr nz,+
+    LD_A_A16,   W_GAME_KEYS_JUST_PRESSED,   # ld a,(wGameKeysJustPressed)
+    AND,        BTN_UDLR,                   # and (BTN_RIGHT | BTN_LEFT | BTN_UP | BTN_DOWN)
+    JR_NZ,      "@directionButtonPressed",  # jr nz,@directionButtonPressed
+    Label("+"),
+    LD_L,       0x3e,                       # ld l,SpecialObject.var3e
+    DEC_HLP,                                # dec (hl)
+    BIT7_HLP,                               # bit 7,(hl)
+    JR_Z,       "++",                       # jr z,++
+    LD_A,       0xFF,                       # ld a,$ff
+    LD_HLP_A,                               # ld (hl),a
+    JR,         17,                         # jr func_5933
+    Label("@directionButtonPressed"),
+
+    LD_A,       0x87,                       # ld a,SND_SPLASH
+    CALL,       PLAY_SOUND,                 # call playSound
+    LD_H_D,                                 # ld h,d
+    LD_L,       0x3e,                       # ld l,SpecialObject.var3e
+    LD_HLP,     4,                          # ld (hl),$04
+    Label("++"),
+    ]
+NEW_SWIMMERS_RING0_ASM  = list(ORIG_SWIMMERS_RING0_ASM)
+NEW_SWIMMERS_RING0_ASM[3:5] = [
+    CALL,   SWIMMERS_RING1,         # call swimmersRing1
+    ]
+SWIMMERS_RING1_ASM = [
+    LD_A,       SWIMMERS_RING,              # ld a,SWIMMERS_RING
+    CALL,       CP_ACTIVE_RING0,            # call cpActiveRing
+    JR_NZ,      "@manualSwim",              # jr nz,@manualSwim
+    LD_A_A16,   W_FRAME_COUNTER,            # ld a,(wFrameCounter)
+    AND,        4,                          # and 4
+    JR_NZ,      "@manualSwim",              # jr nz,@manualSwim
+
+    LD_A_A16,   W_GAME_KEYS_PRESSED,        # ld a,(wGameKeysPressed)
+    RET,                                    # ret
+    Label("@manualSwim"),
+    LD_A_A16,   W_GAME_KEYS_JUST_PRESSED,   # ld a,(wGameKeysJustPressed)
+    RET,                                    # ret
+    ]
+        
 
 STEADFAST_RING1_ASM = [
     b'\x62',                # ld h,d
@@ -170,34 +214,39 @@ ORIG_HASTE_RING0_ASM = [
 NEW_HASTE_RING0_ASM = list(ORIG_HASTE_RING0_ASM)
 NEW_HASTE_RING0_ASM[:3] = b'\xcd', HASTE_RING1
 HASTE_RING1_ASM = [
-    b'\x3e',HASTE_RING,     # ld a,HASTE_RING
-    b'\xcd',CP_ACTIVE_RING0,# call cpActiveRing
+    # don't use the ring if link is being force-moved(i.e. during a cutscene)
+    LD_A_A16,   W_LINK_FORCE_STATE, # ld a,(wLinkForceState)
+    OR_A,                           # or a
+    JR_NZ,      "@notJogging",      # jr nz,@notJogging
 
-    b'\x20\x1a',            # jr nz,@notJogging
-    b'\x78',                # ld a,b
-    b'\xfe\x03',            # cp $03
-    b'\x20\x02',            # jr nz,@notStairs
+    LD_A,       HASTE_RING,         # ld a,HASTE_RING
+    CALL,       CP_ACTIVE_RING0,    # call cpActiveRing
+
+    JR_NZ,      "@notJogging",      # jr nz,@notJogging
+    LD_A_B,                         # ld a,b
+    CP,         3,                  # cp $03
+    JR_NZ,      "@notStairs",       # jr nz,@notStairs
     # upgrade stairs to grass
-    b'\x06\x02',            # ld b,$02
-    # @notStairs
-    b'\xfe\x02',            # cp $02
-    b'\x20\x02',            # jr nz,@notGrass
+    LD_B,       2,                  # ld b,$02
+    Label("@notStairs"),
+    CP,         2,                  # cp $02
+    JR_NZ,      "@notGrass",        # jr nz,@notGrass
     # upgrade grass to normal
-    b'\x06\x04',            # ld b,$04
-    # @notGrass
-    b'\xfe\x04',            # cp $04
-    b'\x20\x09',            # jr nz,@notJogging
-    b'\x7b',                # ld a,e
-    b'\xfe\x03',            # cp $03
-    b'\x28\x04',            # jr z,@notJogging
+    LD_B,       4,                  # ld b,$04
+    Label("@notGrass"),
+    CP,         4,                  # cp $04
+    JR_NZ,      "@notJogging",      # jr nz,@notJogging
+    LD_A_E,                         # ld a,e
+    CP,         3,                  # cp $03
+    JR_Z,       "@notJogging",      # jr z,@notJogging
     # upgrade normal to pegasus grass
-    b'\x06\x02',            # ld b,$02
-    b'\x1e\x03',            # ld e,$03
-    # @notJogging
-    b'\x7b',                # ld a,e
-    b'\x80',                # add b
-    b'\x81',                # add c
-    b'\xc9',                # ret
+    LD_B,       2,                  # ld b,$02
+    LD_E,       3,                  # ld e,$03
+    Label("@notJogging"),
+    LD_A_E,                         # ld a,e
+    ADD_B,                          # add b
+    ADD_C,                          # add c
+    RET,                            # ret
     ]
 
 ORIG_ADVANCE_RING0_ASM = [
@@ -314,10 +363,10 @@ TOSS_RING_TEST1_ASM = [
     ]
 
 ORIG_PUNCH_WITH_ITEM_ASM = [
-    b'\x2e',INVENTORY_B,# ld l,<wInventoryB
-    b'\x2a',            # ldi a,(hl)
-    b'\xb6',            # or (hl)
-    b'\xc0',            # ret nz
+    b'\x2e',W_INVENTORY_B_L,# ld l,<wInventoryB
+    b'\x2a',                # ldi a,(hl)
+    b'\xb6',                # or (hl)
+    b'\xc0',                # ret nz
     ]
 NEW_PUNCH_WITH_ITEM_ASM = [
     # replace with a bunch of nops

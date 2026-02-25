@@ -1,5 +1,6 @@
 from .const import *
 from ..const import *
+from ..opcodes import *
 from ..shared.const import *
 from ..combo_sword.const import SWORD_BEAM_LIMIT
 
@@ -274,7 +275,7 @@ CREATE_EXPLOSION_IN_FRONT_OF_LINK_ASM = [
     b'\xc1',                       # pop bc
     ]
 
-DO_SUPER_PUNCH_ASM = [
+SEAS_DO_SUPER_PUNCH_ASM = [
     # create an explosion effect
     *CREATE_EXPLOSION_IN_FRONT_OF_LINK_ASM,
     b'\xc5',                       #   push bc
@@ -302,12 +303,14 @@ DO_SUPER_PUNCH_ASM = [
     # @notBreakable
     # destroy the ground and clear dirt if you've obtained the shovel
     b'\x3e\x15',                   #   ld a,TREASURE_SHOVEL
-    b'\xcd',CHECK_HAVE_TREASURE,   #   call checkTreasureObtained
-    b'\x30\x07',                   #   jr nc,@notDiggable
+    CALL,   CHECK_HAVE_TREASURE,   #   call checkTreasureObtained
+    JR_NZ,  "@notDiggable",        #   jr nz,@notDiggable
+    PLACEHOLDER0,
     b'\x3e\x06',                   #     ld a,BREAKABLETILESOURCE_SHOVEL
     b'\xcd',SWORD_TRY_BREAK_TILE,  #     call tryBreakTileWithSword
     b'\xc1',                       #     pop bc
     b'\xc5',                       #     push bc
+    Label("@notDiggable"),
     # @notDiggable
     # cut down trees if you've obtained ember seeds
     b'\x3e\x20',                   #   ld a,TREASURE_EMBER_SEEDS
@@ -322,6 +325,15 @@ DO_SUPER_PUNCH_ASM = [
     # @done
     ]
 
+AGES_DO_SUPER_PUNCH_ASM = list(SEAS_DO_SUPER_PUNCH_ASM)
+tmp_idx = AGES_DO_SUPER_PUNCH_ASM.index(PLACEHOLDER0)
+AGES_DO_SUPER_PUNCH_ASM[tmp_idx: tmp_idx+1] = [
+    # no destroying dirt while underwater
+    b'\xfa',W_ACTIVE_COLLISIONS,   #   ld a,(wActiveCollisions)
+    CP,     4,                     #   cp 4
+    JR_Z,  "@notDiggable",         #   jr z,@notDiggable
+    ]
+
 SUPER_PUNCH3_ASM = [
     b'\xc5',                       # push bc
     b'\x01',FIST_RING,EXPERTS_RING,# ld bc,EXPERTS_RING,FIST_RING
@@ -329,8 +341,61 @@ SUPER_PUNCH3_ASM = [
     b'\xc1',                       # pop bc
     b'\x30\x60',                   # jr nc,@notSuperPunch
     b'\x20\x5e',                   # jr nz,@notSuperPunch
-    *DO_SUPER_PUNCH_ASM,
+    PLACEHOLDER0,
     b'\x3e\x03',                   # ld a,BREAKABLETILESOURCE_EXPERTS_RING
     b'\xcd',SWORD_TRY_BREAK_TILE,  # call tryBreakTileWithSword
     b'\xc9',                       # ret
+    ]
+
+tmp_idx = SUPER_PUNCH3_ASM.index(PLACEHOLDER0)
+AGES_SUPER_PUNCH3_ASM = list(SUPER_PUNCH3_ASM)
+SEAS_SUPER_PUNCH3_ASM = list(SUPER_PUNCH3_ASM)
+AGES_SUPER_PUNCH3_ASM[tmp_idx: tmp_idx+1] = AGES_DO_SUPER_PUNCH_ASM
+SEAS_SUPER_PUNCH3_ASM[tmp_idx: tmp_idx+1] = SEAS_DO_SUPER_PUNCH_ASM
+
+
+
+ORIG_BRACELET_PUNCH0_ASM = [
+    JR_NZ,      "++",                   # jr nz,++
+    LD_A,       0x41,                   # ld a,$41
+    LD_A16_A,   W_LINK_GRAB_STATE,      # ld (wLinkGrabState),a
+    JP, ITEM_LOAD_ANIM_INC_STATE,       # jp parentItemLoadAnimationAndIncState
+    Label("++"),
+    LD_A_A16,   LINK_DIRECTION,         # ld a,(w1Link.direction)
+    OR, 0x80,                           # or $80
+    LD_A16_A,   W_BRACELET_NOT_GRABBING, # ld (wBraceletGrabbingNothing),a
+    RET,                                # ret
+    ]
+NEW_BRACELET_PUNCH0_ASM = list(ORIG_BRACELET_PUNCH0_ASM)
+NEW_BRACELET_PUNCH0_ASM[-3:-1] = [
+    CALL,   BRACELET_PUNCH1
+    ]
+
+BRACELET_PUNCH1_ASM = [
+    PUSH_BC,                                # push bc
+    LD_A16_A,   W_BRACELET_NOT_GRABBING,    # ld (wBraceletGrabbingNothing),a
+    LD_BC,      FIST_RING,EXPERTS_RING,     # ld bc,EXPERTS_RING,FIST_RING
+    CALL,       EITHER_RING,                # call eitherRingActive
+    JR_C,       "@punch",                   # jr c,@punch
+    JR_Z,       "@punch",                   # jr z,@punch
+    POP_BC,                                 # pop bc
+    RET,                                    # ret
+
+    Label("@punch"),
+    # make sure the button was just pressed so we can't rapid-fire punch
+    LD_E,       3,                          # ld e,Item.var03
+    LD_A_DEP,                               # ld a,(de)
+    LD_B_A,                                 # ld b,a
+    LD_A_A16,   W_GAME_KEYS_JUST_PRESSED,   # ld a,wGameKeysJustPressed
+    CP_B,                                   # cp b
+    POP_BC,                                 # pop bc
+    RET_NZ,                                 # ret nz
+
+    # not grabbing anything, so act as if link is unequipped and try punching
+    # change the item type to punch and run the item code for it
+    LD_A,       2,                          # ld a,ITEM_PUNCH
+    LD_E,       1,                          # ld e,Item.id
+    LD_DEP_A,                               # ld (de),a
+    CALL,       SWORD_PARENT_CODE,          # call swordParentCode
+    RET,                                    # ret
     ]

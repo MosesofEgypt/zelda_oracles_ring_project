@@ -122,7 +122,8 @@ GET_CAN_REMAP_SPRITE_ASM = [
     b'\xfe\x33',                    # cp $33  # squash flat
     b'\xc8',                        # ret z
 
-    # don't remap if swimming(no custom sprites makes it look baaaaad)
+    # don't remap if swimming while not sidescrolling
+    # (no custom sprites makes it look baaaaad)
     b'\xfa',W_LINK_SWIMMING_STATE,  # ld a,(wLinkSwimmingState)
     b'\xb7',                        # or a
     b'\x20\x02',                    # jr nz,@done
@@ -131,8 +132,8 @@ GET_CAN_REMAP_SPRITE_ASM = [
 
     # @done
     b'\xfa',W_ACTIVE_GROUP,         # ld a,(wActiveGroup)
-    b'\xfe\x06',                    # cp FIRST_SIDESCROLL_GROUP
-    b'\x20\x02',                    # jr nz,@done
+    b'\xfe',FIRST_SIDESCROLL_GROUP, # cp FIRST_SIDESCROLL_GROUP
+    b'\x30\x02',                    # jr nc,@done
     b'\xaf',                        #   xor a
     b'\xc9',                        #   ret
     b'\xb7',                        # or a

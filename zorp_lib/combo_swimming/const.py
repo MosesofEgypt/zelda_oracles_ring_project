@@ -2,8 +2,11 @@
 PATCH_BANKS = dict(
     SWIM_CHECK          = 5,
 
-    FEATHER_CHECK0      = 6,
-    FEATHER_CHECK1      = 6,
+    SWIMMING_CHECK0     = 6,
+    SWIMMING_CHECK1     = 6,
+
+    UNDERWATER_ITEM_B0  = 6,
+    UNDERWATER_ITEM_B1  = 6,
 
     LINK_DIVING_CHECK   = 6,
     )

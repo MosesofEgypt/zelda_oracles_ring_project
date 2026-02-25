@@ -657,9 +657,9 @@ NEW_INV_RING_BOX_CURSOR_MOVED_ASM = [
     b'\xc9',                            # ret
 
 
+    b'\xcd',RELOAD_INV_MENU_GFX,        # call reloadInvMenuGfx
     b'\x3e\x84',                        # ld a,SND_MENU_MOVE
     b'\xcd',PLAY_SOUND,                 # call playSound
-    b'\xcd',RELOAD_INV_MENU_GFX,        # call reloadInvMenuGfx
     b'\x00'*10,                         # nop
     ]
 
