@@ -965,7 +965,7 @@ RING_BOX_CURSOR_MOVED1_ASM = [
     b'\x77',                    # ld (hl),a
     b'\xf5',                    # push af
     b'\x21',DISP_RING_NUM_COMP, # ld hl,displayedRingNumberComparator
-    b'\x7e',                    # ld a,(h1)
+    b'\x7e',                    # ld a,(hl)
     b'\xfe\xff',                # cp $ff
     b'\x20\x02',                # jr nz,@redraw
     # force redraw by setting previous value to an invalid index
@@ -1001,7 +1001,7 @@ REMAP_SELECTED_RING_ASM = [
     b'\xe5',               # push hl
     b'\x21',RING_MAP_TABLE,# ld hl,@ringMapTable
     b'\xd7',               # rst_addAToHl
-    b'\x7e',               # ld a,(h1)
+    b'\x7e',               # ld a,(hl)
     b'\xe1',               # pop hl
     # @done
     ]

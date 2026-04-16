@@ -13,7 +13,7 @@ ARROW_DOWN_SPRITE_RED_ASM[-1]   = 0x45
 
 
 ORIG_CP_ACTIVE_RING0_ASM = [
-    PUSH_HL,                # push h1
+    PUSH_HL,                # push hl
     LD_HL,  W_ACTIVE_RING,  # ld hl,(wActiveRing)
     CP_HLP,                 # cp (hl)
     POP_HL,                 # pop hl
@@ -55,7 +55,7 @@ EITHER_RING_ASM = [
     RET,                        # ret
     ]
 NEW_CP_ACTIVE_RING1_BUFFED1_ASM = [
-    PUSH_HL,                        # push h1
+    PUSH_HL,                        # push hl
     PUSH_BC,                        # push bc
     LD_B,       5,                  # ld b,$05
     LD_HL,      W_BOX_CONTENTS,     # ld hl,wRingBoxContents
@@ -115,7 +115,7 @@ NEW_CP_ACTIVE_RING1_NO_STACKING_ASM[tmp_idx+1] = [
     ]
 
 REMOVE_RING_ASM = [
-    PUSH_HL,                        # push h1
+    PUSH_HL,                        # push hl
     PUSH_BC,                        # push bc
     LD_B_A,                         # ld b,a
     LD_HL,  RINGS_OBTAINED,         # ld hl,wRingsObtained

@@ -13,7 +13,7 @@ ORIG_COLLISION_CHECK0_ASM = [
     b'\xc1',                 # pop bc
     b'\xf0\x90',             # ld a,(<hFF90)
     b'\xd7',                 # rst_addAToHl
-    b'\x7e',                 # ld a,(h1)
+    b'\x7e',                 # ld a,(hl)
     b'\xc7',                 # rst_jumpTable
     ]
 
@@ -26,7 +26,7 @@ NEW_COLLISION_CHECK0_ASM[-4:-1] = [
 COLLISION_CHECK1_ASM = [
     b'\xf0\x90',              # ld a,(<hFF90)
     b'\xd7',                  # rst_addAToHl
-    b'\x7e',                  # ld a,(h1)
+    b'\x7e',                  # ld a,(hl)
     b'\xcd',COLLISION_BOUNCE0,# call collisionBounce
     b'\xc9',                  # ret
     ]
