@@ -126,16 +126,18 @@ GET_CAN_REMAP_SPRITE_ASM = [
     # (no custom sprites makes it look baaaaad)
     b'\xfa',W_LINK_SWIMMING_STATE,  # ld a,(wLinkSwimmingState)
     b'\xb7',                        # or a
-    b'\x20\x02',                    # jr nz,@done
+    b'\x20\x02',                    # jr nz,@checkGroup
     b'\x3c',                        #   inc a
     b'\xc9',                        #   ret
 
-    # @done
+    # @checkGroup
     b'\xfa',W_ACTIVE_GROUP,         # ld a,(wActiveGroup)
     b'\xfe',FIRST_SIDESCROLL_GROUP, # cp FIRST_SIDESCROLL_GROUP
     b'\x30\x02',                    # jr nc,@done
     b'\xaf',                        #   xor a
     b'\xc9',                        #   ret
+
+    # @done
     b'\xb7',                        # or a
     b'\xc9',                        # ret
     ]
@@ -189,12 +191,12 @@ REMAP_XFORM_LINK_ASM = [
     b'\x7b',                        #   ld a,e
     b'\xc9',                        #   ret
 
+    # @doRemap
     # check if link-riding object or not
     b'\x47',                        # ld b,a
     b'\x7b',                        # ld a,e
     b'\xfe\x09',                    # cp $09
 
-    # @doRemap
     b'\x58',                        # ld e,b
     b'\x79',                        # ld a,c
     b'\x06\x00',                    # ld b,$00

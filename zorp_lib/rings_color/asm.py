@@ -92,7 +92,6 @@ MAIN_LOOP1_ASM = [
     b'\xaf',                        # xor a
     b'\x21',W_BOX_CONTENTS_EXT,     # ld hl,wRingBoxContentsExt
     b'\x2c'*5,                      # inc l // (5 times)
-    # @checkNext
     b'\xbe',                        # cp (hl)
     b'\x20\x09',                    # jr nz,@done
     b'\x2f',                        #   cpl
