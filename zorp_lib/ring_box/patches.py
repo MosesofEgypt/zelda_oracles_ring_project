@@ -195,7 +195,7 @@ def prepare_ring_list_reorg_patches(**kw):
     update_mappings(**kw)
     patch_data = [
         [RING_MAP_TABLE,           asm.RING_MAP_TABLE_ASM],
-        [GET_SELECTED_RING1,       asm.GET_SELECTED_RING1_ASM],
+        [SET_SELECTED_RING1,       asm.SET_SELECTED_RING1_ASM],
         [DRAW_RING1,               asm.DRAW_RING1_ASM],
         [DRAW_RING_BOX1,           asm.DRAW_RING_BOX1_ASM],
         [IS_RING_IN_BOX1,          asm.IS_RING_IN_BOX1_ASM],
@@ -222,7 +222,7 @@ def prepare_ring_list_reorg_patches(**kw):
         [GET_RING_BOX_SPRITE_OFF,  asm.NEW_GET_RING_BOX_SPRITE_OFF_ASM,   asm.ORIG_GET_RING_BOX_SPRITE_OFF_ASM],
         [SHOULD_DRAW_RING0,        asm.NEW_SHOULD_DRAW_RING0_ASM,         asm.ORIG_SHOULD_DRAW_RING0_ASM],
         [DRAW_RING0,               asm.NEW_DRAW_RING0_ASM,                asm.ORIG_DRAW_RING0_ASM],
-        [SET_SELECTED_RING,        asm.NEW_SET_SELECTED_RING_ASM,         asm.ORIG_SET_SELECTED_RING_ASM],
+        [SET_SELECTED_RING0,       asm.NEW_SET_SELECTED_RING0_ASM,        asm.ORIG_SET_SELECTED_RING0_ASM],
         [DRAW_CARRIED,             asm.NEW_DRAW_CARRIED_ASM,              asm.ORIG_DRAW_CARRIED_ASM],
         [EQUIP_RING,               asm.NEW_EQUIP_RING_ASM,                asm.ORIG_EQUIP_RING_ASM],
         [DRAW_EQUIP0,              asm.NEW_DRAW_EQUIP0_ASM,               asm.ORIG_DRAW_EQUIP0_ASM],

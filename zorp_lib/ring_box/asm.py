@@ -306,7 +306,7 @@ ORIG_DRAW_EQUIP2_ASM = [
     b'\x21',EQUIP_SPRITE1,      # ld hl,(@equippedSprite)
     b'\xc3',ADD_TO_OAM,         # jp addSpritesToOam_withOffset
     ]
-ORIG_SET_SELECTED_RING_ASM = [
+ORIG_SET_SELECTED_RING0_ASM = [
     b'\xfa',RING_MENU_PAGE,  # ld a,(ringMenuPage)
     b'\xcb\x37',             # swap a
     b'\x4f',                 # ld c,a
@@ -537,7 +537,7 @@ ORIG_DRAW_RING_BOX_CURSOR_ASM = [
     b'\xc3',ADD_TO_OAM,             # jp addSpritesToOam_withOffset
     ]
 
-NEW_SET_SELECTED_RING_ASM       = list(ORIG_SET_SELECTED_RING_ASM)
+NEW_SET_SELECTED_RING0_ASM      = list(ORIG_SET_SELECTED_RING0_ASM)
 NEW_SHOULD_DRAW_RING0_ASM       = list(ORIG_SHOULD_DRAW_RING0_ASM)
 NEW_DRAW_RING0_ASM              = list(ORIG_DRAW_RING0_ASM)
 NEW_GET_RING_BOX_SPRITE_OFF_ASM = list(ORIG_GET_RING_BOX_SPRITE_OFF_ASM)
@@ -548,7 +548,7 @@ NEW_SUBSCREEN1_MAIN_ASM         = list(ORIG_SUBSCREEN1_MAIN_ASM)
 NEW_DRAW_RING_BOX_CURSOR_ASM    = list(ORIG_DRAW_RING_BOX_CURSOR_ASM)
 
 # replace the instruction with calls to new code
-NEW_SET_SELECTED_RING_ASM[-3:-1]    = b'\xcd', GET_SELECTED_RING1
+NEW_SET_SELECTED_RING0_ASM[-3:-1]   = b'\xcd', SET_SELECTED_RING1
 NEW_SHOULD_DRAW_RING0_ASM[4]        = SHOULD_DRAW_RING1
 NEW_DRAW_RING0_ASM[-4]              = DRAW_RING1
 NEW_GET_RING_BOX_SPRITE_OFF_ASM[:3] = [
@@ -586,7 +586,7 @@ DRAW_RING_BOX_CURSOR1_ASM = [
 
     b'\x38\x03',                    # jr c,+
     b'\x21',ARROW_UP_SPRITE_BLUE,   #   ld hl,arrowUpSpriteBlue
-
+    # +
     b'\x01\x1a\x11',                # ld bc,$11,$1a
     b'\xe5',                        # push hl
     b'\xcd',ADD_TO_OAM,             # call addSpritesToOam_withOffset
@@ -826,14 +826,14 @@ DRAW_EQUIP1_ASM = [
     b'\x21',ARROW_DOWN_SPRITE_RED,  #   ld hl,arrowDownSpriteRed
     b'\x38\x03',                    #   jr c,+
     b'\x21',ARROW_UP_SPRITE_BLUE,   #     ld hl,arrowUpSpriteBlue
-
+    # +
     b'\xcd',GET_BOX_CAPACITY,       #   call getRingBoxCapacity
     b'\xfe\x06',                    #   cp $06
     b'\x38\x16',                    #   jr c,@done
     b'\xfa',W_FRAME_COUNTER,        #     ld a,(wFrameCounter)
     b'\xcb\x5f',                    #     bit 3,a
     b'\x28\x0d',                    #     jr z,@done
-    b'\x01\x20\x70',                #       ld bc,$68,$20
+    b'\x01\x20\x70',                #       ld bc,$70,$20
     b'\xe5',                        #       push hl
     b'\xcd',ADD_TO_OAM,             #       call addSpritesToOam_withOffset
     b'\xe1',                        #       push hl
@@ -845,8 +845,9 @@ DRAW_EQUIP1_ASM = [
 
     b'\xcd',GET_BOX_CAPACITY,   # call getRingBoxCapacity
     b'\xfe\x06',                # cp $06
-    b'\x38\x02',                # jr c,@done
+    b'\x38\x02',                # jr c,+
     b'\x3e\x05',                #   ld a,$05
+    # +
     b'\x47',                    # ld b,a
     b'\x0e\x00',                # ld c,$00
     b'\x21',W_BOX_CONTENTS,     # ld hl,(wRingBoxContents)
@@ -870,7 +871,8 @@ GET_RING_BOX_SPRITE_OFF1_ASM = [
     b'\xf5',            # push af
     b'\xfe\x05',        # cp $05
     b'\x38\x02',        # jr c,+
-    b'\xd6\x05',        #   sub,$05
+    b'\xd6\x05',        #   sub $05
+    # +
     b'\xd7',            # rst_addAToHl
     b'\x4e',            # ld c,(hl)
     b'\x06\x00',        # ld b,$00
@@ -1006,7 +1008,7 @@ REMAP_SELECTED_RING_ASM = [
     # @done
     ]
 
-GET_SELECTED_RING1_ASM = [
+SET_SELECTED_RING1_ASM = [
     *REMAP_SELECTED_RING_ASM,
     b'\xea',SELECTED_RING, # ld (selectedRing),a
     b'\xc9',               # ret

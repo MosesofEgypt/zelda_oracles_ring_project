@@ -689,11 +689,12 @@ for ring_list in [
 
 
 RING_TIER_MASKS_ASM = list(
-    sum(1<<i for i in ring_list[::2])
+    sum(1<<i for i in ring_list[:-1:2])
     for ring_list in [
        RING_TIER0_TABLE_ASM, RING_TIER1_TABLE_ASM,
        RING_TIER2_TABLE_ASM, RING_TIER3_TABLE_ASM,
        ])
+
 # 8 bytes per tier, indicating how to mask wObtainedRings
 # to figure out if link has every ring in this tier
 RING_TIER_MASKS_ASM = [
