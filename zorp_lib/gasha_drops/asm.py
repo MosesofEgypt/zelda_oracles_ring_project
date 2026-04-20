@@ -162,11 +162,12 @@ NEW_GET_RANDOM_TIERED_RING_ASM = [
     # @param[out]   c   Randomly chosen ring from the given tier (to be passed to "giveTreasure")
     LDH_A,      H_ROM_BANK,         # ldh a,(<hRomBank)
     PUSH_AF,                        # push af
-    PUSH_BC,                        # push bc
-    PUSH_DE,                        # push de
     LD_A,       0x3F,               # ld a,$3f
     LDH_A8,     H_ROM_BANK,         # ldh (<hRomBank),a
     SET_ROM_BANK,                   # setrombank
+
+    PUSH_BC,                        # push bc
+    PUSH_DE,                        # push de
 
     # put the new-ring-chance into b as a value in the range 0x0F - 0xFF
     LD_A_C,                         # ld a,c
@@ -196,6 +197,7 @@ NEW_GET_RANDOM_TIERED_RING_ASM = [
     POP_DE,                         # pop de
     POP_AF,                         # pop af
     LD_B_A,                         # ld b,a
+
     POP_AF,                         # pop af
     LDH_A8,     H_ROM_BANK,         # ldh (<hRomBank),a
     SET_ROM_BANK,                   # setrombank
@@ -210,8 +212,8 @@ GET_RANDOM_TIERED_RING1_ASM = [
     # @param[out]   e       Randomly chosen ring from the given tier
 
     PUSH_BC,                        # push bc
-    # to make it easier to get the highest tier ring, we'll bump
-    # from tier0 to tier4 if all other tiers have been collected
+    # to get the highest tier ring, we'll bump from tier0
+    # to tier4 if all other tiers have been collected
     LD_A_D,                         # ld a,d
     OR_A,                           # or a
     JR_NZ,  "@checkIsTier4",        # jr nz,@checkIsTier4
@@ -241,7 +243,7 @@ GET_RANDOM_TIERED_RING1_ASM = [
         DEC_E,                      #   dec e
         LD_A_E,                     #   ld a,e
         CP,         0xFF,           #   cp $FF
-        JR_NZ,  "@checkCollected",  #   jr nz,@checkIsTier4
+        JR_NZ,  "@checkCollected",  #   jr nz,@checkCollected
 
     # increment to the secret ring tier
     LD_D,           4,              # ld d,4
@@ -360,25 +362,12 @@ GET_RANDOM_TIERED_RING1_ASM = [
         JR_NZ, "@tryGetNewRing",    #   jr nz,@tryGetNewRing
 
         # that was the last byte, so we might have to try another tier
-        LD_A,       3,                  # ld a,$03
-        CP_C,                           # cp c
-        JR_Z, "@maybeGoToSecretTier",   # jr z,@maybeGoToSecretTier
-            JR_NC, "@trySelectNewRing", #   jr nc,@trySelectNewRing
-                # reset to the original tier and select randomly
-                LD_C_D,                 #     ld c,d
-                JR, "@selectRandomRing",#     jr @selectRandomRing
-
-        Label("@maybeGoToSecretTier"),
-            # we can only increment to the final tier if we
-            # went through the other tiers, starting with 0
-            LD_A_D,                     #   ld a,d
-            OR_D,                       #   or d
-
-            # reset to the original tier
-            LD_C_D,                     #   ld c,d
-            JR_NZ, "@selectRandomRing", #   jr nz,@selectRandomRing
-                # go to secret tier, fall through, and select randomly
-                LD_C,       4,          #     ld c,$04
+        LD_A,       3,              #   ld a,$03
+        CP_C,                       #   cp c
+        JR_NC, "@trySelectNewRing", #   jr nc,@trySelectNewRing
+            # reset to the original tier and select randomly
+            LD_C_D,                 #     ld c,d
+            JR, "@selectRandomRing",#     jr @selectRandomRing
 
     Label("@selectRandomRing"),
     # get the tier table pointer
@@ -490,13 +479,13 @@ DETERMINE_RING_DROP_TIER_ASM = [
 
 
     Label("@check2"),
-    CP,  RING_TIER_2_MAX_KILLS, # cp a,ring2MaxKills
+    CP,  RING_TIER_2_MAX_KILLS, # cp a,ringTier2MaxKills
     JR_C,    "@maybe2",         # jr c,@maybe2
         DEC_B,                  #   dec b
         JR,  "@check1",         #   jr @check1
 
     Label("@maybe2"),
-    CP,  RING_TIER_2_MIN_KILLS, # cp a,ring2MinKills
+    CP,  RING_TIER_2_MIN_KILLS, # cp a,ringTier2MinKills
     JR_C,    "@check1",         # jr c,@check1
         CALL,GET_RANDOM_NUMBER, #   call getRandomNumber
         CP,     0x80,           #   cp $80
@@ -505,13 +494,13 @@ DETERMINE_RING_DROP_TIER_ASM = [
 
 
     Label("@check1"),
-    CP,  RING_TIER_1_MAX_KILLS, # cp a,ring1MaxKills
+    CP,  RING_TIER_1_MAX_KILLS, # cp a,ringTier1MaxKills
     JR_C,    "@maybe1",         # jr c,@maybe1
         DEC_B,                  #   dec b
-        JR,  "@maybe0",         #   jr @check0
+        JR,  "@maybe0",         #   jr @maybe0
 
     Label("@maybe1"),
-    CP,  RING_TIER_1_MIN_KILLS, # cp a,ring1MinKills
+    CP,  RING_TIER_1_MIN_KILLS, # cp a,ringTier1MinKills
     JR_C,    "@maybe0",         # jr c,@maybe0
         CALL,GET_RANDOM_NUMBER, #   call getRandomNumber
         CP,     0x80,           #   cp $80
@@ -520,11 +509,11 @@ DETERMINE_RING_DROP_TIER_ASM = [
 
 
     Label("@maybe0"),
-    CP,  RING_TIER_0_MIN_KILLS, # cp a,ring0MinKills
-    JR_C,    "@checkZero",      # jr c,@checkUnderflow
+    CP,  RING_TIER_0_MIN_KILLS, # cp a,ringTier0MinKills
+    JR_C,    "@checkZero",      # jr c,@checkZero
         CALL,GET_RANDOM_NUMBER, #   call getRandomNumber
         CP,     0x80,           #   cp $80
-        JR_C,"@checkZero",      #   jr c,@checkUnderflow
+        JR_C,"@checkZero",      #   jr c,@checkZero
             DEC_B,              #   dec b
 
     # ensure we didn't go too low
