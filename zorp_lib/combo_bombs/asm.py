@@ -147,8 +147,8 @@ REMOTE_BOMB1_ASM = [
     #       to add logic to @bombUpdateAnimation to handle the return there.
     b'\xf1',                          # pop af
     b'\xc9',                          # ret
-    b'\xcd',ITEM_ANIMATE,             # call itemAnimate
     # @notRemote
+    b'\xcd',ITEM_ANIMATE,             # call itemAnimate
     b'\x01',HASTE_RING,BOMBPROOF_RING,# ld bc,BOMBPROOF_RING,HASTE_RING
     b'\xcd',EITHER_RING,              # call eitherRingActive
     b'\x20\x08',                      # jr nz,@done

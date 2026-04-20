@@ -291,8 +291,9 @@ ADVANCE_RING1_ASM = [
     b'\x38\x07',                          #   jr c,@done
     b'\xcb\x7f',                          #     bit 7,a
     b'\x28\x02',                          #     jr z,@increment
-    b'\x35',                              #     dec (hl)
-    b'\xc9',                              #     ret
+    b'\x35',                              #       dec (hl)
+    b'\xc9',                              #       ret
+    # @increment
     b'\x34',                              #     inc (hl)
     # @done
     b'\xc9',                              # ret

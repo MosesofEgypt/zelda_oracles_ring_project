@@ -85,11 +85,9 @@ ALCHEMY_RING6_ASM = [
     b'\xc9',                # ret
     ]
 ALCHEMY_RING7_ASM = [
-    b'\xc5',                # push bc
     b'\xe5',                # push hl
     b'\xcd',ALCHEMY_RING8,  # call alchemyRing8
     b'\xe1',                # pop hl
-    b'\xc1',                # pop bc
     b'\x77',                # ld (hl),a
     b'\xc0',                # ret nz
     b'\xe1',                # pop hl
@@ -143,8 +141,10 @@ ALCHEMY_RING8_ASM = [
     b'\xcd',REMOVE_RUPEE_VALUE,     # call removeRupeeValue
     # set the amount of ammo in "a" to 1
     b'\x3e\x01',                    # ld a,$01
+    b'\xc5',                        # push bc
     b'\x01',GOLD_JOY_RING,GREEN_JOY_RING,# ld bc,GREEN_JOY_RING,GOLD_JOY_RING
     b'\xcd',EITHER_RING,            # call eitherRingActive
+    b'\xc1',                        # pop bc
     b'\x20\x02',                    # jr nz,@checkGoldJoy
     b'\xcb\x27',                    #   sla a
     # @checkGoldJoy
