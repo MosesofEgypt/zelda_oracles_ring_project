@@ -44,35 +44,44 @@ NEW_SWIMMING_CHECK1_ASM = (
     )
 
 LINK_DIVING_CHECK_ASM = [
+    # don't need to check if not swimming
     LD_A_A16,   W_LINK_SWIMMING_STATE,  # ld a,(wLinkSwimmingState)
     OR_A,                               # or a
     RET_Z,                              # ret z
+
+    # only allow item usage if currently underwater
+    AND,        0x80,                   # and $80
+    JR_NZ,      "+",                    # jr nz,+
+        RRA,                            #   rra
+        RET,                            #   ret
+    Label("+"),
+
     PUSH_BC,                            # push bc
     LD_B,       0,                      # ld b,0
     LD_A,       SWIMMERS_RING,          # ld a,SWIMMERS_RING
-    CALL,       CP_ACTIVE_RING0,        # call cpActiveRing
-    JR_NZ,      "+",                    # jr nz,+
-        INC_B,                          #   inc b
-
-    Label("+"),
-    LD_A,       ZORA_RING,              # ld a,ZORA_RING
     CALL,       CP_ACTIVE_RING0,        # call cpActiveRing
     JR_NZ,      "++",                   # jr nz,++
         INC_B,                          #   inc b
 
     Label("++"),
-    LD_A,       ROCS_RING,              # ld a,ROCS_RING
+    LD_A,       ZORA_RING,              # ld a,ZORA_RING
     CALL,       CP_ACTIVE_RING0,        # call cpActiveRing
     JR_NZ,      "+++",                  # jr nz,+++
         INC_B,                          #   inc b
 
     Label("+++"),
-    LD_A,       0x4A,                   # ld a,TREASURE_MERMAID_SUIT
-    CALL,       CHECK_HAVE_TREASURE,    # call checkTreasureObtained
-    JR_NC,      "++++",                 # jr nc,++++
+    LD_A,       ROCS_RING,              # ld a,ROCS_RING
+    CALL,       CP_ACTIVE_RING0,        # call cpActiveRing
+    JR_NZ,      "++++",                 # jr nz,++++
         INC_B,                          #   inc b
 
     Label("++++"),
+    LD_A,       0x4A,                   # ld a,TREASURE_MERMAID_SUIT
+    CALL,       CHECK_HAVE_TREASURE,    # call checkTreasureObtained
+    JR_NC,      "+++++",                # jr nc,+++++
+        INC_B,                          #   inc b
+
+    Label("+++++"),
     LD_A_B,                             # ld a,b
     POP_BC,                             # pop bc
     CP,         2,                      # cp 2
