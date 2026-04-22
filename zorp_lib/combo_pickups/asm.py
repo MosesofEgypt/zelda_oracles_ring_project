@@ -1,6 +1,7 @@
 from .const import *
 from ..const import *
 from ..shared.const import *
+from ..opcodes import *
 
 ORIG_HEART_CHECK_ASM = [
     b'\x5f',              # ld e,a
@@ -51,23 +52,22 @@ NEW_HEART_CHECK_SUPER0_ASM = [
     b'\x00',                            # nop
     ]
 HEART_CHECK_SUPER1_ASM = [
-    b'\x38\x01',                        # jr c,@heartLevel3
-    b'\x04',                            #   inc b
-    # @heartLevel3
-    b'\xf5',                            # push af
-    b'\x3e',BLUE_JOY_RING,              # ld a,BLUE_JOY_RING
-    b'\xcd',CP_ACTIVE_RING0,            # call cpActiveRing
-    b'\x20\x02',                        # jr nz,@checkGoldJoy
-    b'\xcb\x21',                        #   sla c
-    b'\xf1',                            # pop af
-    b'\xf5',                            # push af
-    b'\x3e',GOLD_JOY_RING,              # ld a,GOLD_JOY_RING
-    b'\xcd',CP_ACTIVE_RING0,            # call cpActiveRing
-    b'\x20\x02',                        # jr nz,@done
-    b'\xcb\x21',                        #   sla c
-    # @done
-    b'\xf1',                            # pop af
-    b'\xc9',                            # ret
+    JR_C,   "@heartLevel3",             # jr c,@heartLevel3
+    INC_B,                              #   inc b
+    Label("@heartLevel3"),
+    # check rings
+    # NOTE: only doubling ONCE if either ring is worn, as the code that
+    # 		handles health refills will double if both rings are worn.
+    PUSH_BC,                            # push bc
+    LD_BC,  GOLD_JOY_RING,BLUE_JOY_RING,# ld bc,BLUE_JOY_RING,GOLD_JOY_RING
+    CALL,   EITHER_RING,                # call eitherRingActive
+    POP_BC,                             # pop bc
+    JR_Z,   "+",                        # jr z,+
+    JR_NC,  "@done",                    # jr nc,@done
+    Label("+"),
+        SLA_C,                          #   sla c
+    Label("@done"),
+    RET,                                # ret
     ]
 
 
