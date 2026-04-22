@@ -16,15 +16,17 @@ ORIG_RANG_CHECK0_ASM = [
     # +
     ]
 NEW_RANG_CHECK0_ASM = [
-    b'\xcd',RANG_CHECK1,    # call rangCheck1
-    b'\xcd',EITHER_RING,    # call eitherRingActive
-    b'\x0e\xff',            # ld c,-1
-    b'\x20\x05',            # jr nz,@rangLevel0Or1
-    b'\x0d',                # dec c
-    b'\x20\x02',            # jr nz,@rangLevel2
-    b'\x0e\xfc',            # ld c,-4
-    b'\x30\x06',            # jr nc,++
-    b'\x00',                # nop
+    CALL,   RANG_CHECK1,    # call rangCheck1
+    LD_C,   -1,             # ld c,-1
+    JR_NZ,  "+",            # jr nz,+
+        LD_C,   -4,         #   ld c,-4
+        JR_C,  "+",         #   jr c,+
+            LD_C,   -2,     #     ld c,-2
+        JR,     "+++",      #   jr +++
+    Label("+"),
+    JR_NC,  6,              # jr nc,++
+    Label("+++"),
+    NOP,                    # nop
     ]
 RANG_CHECK1_ASM = [
     b'\x3e',TOSS_RING,                # ld a,TOSS_RING
@@ -33,7 +35,7 @@ RANG_CHECK1_ASM = [
     b'\x28\x06',                      # jr z,@checkRings
     b'\x3e',HASTE_RING,               # ld a,HASTE_RING
     b'\xcd',CP_ACTIVE_RING0,          # call cpActiveRing
-    b'\xc0',                          # ret nz
+    b'\x20',17,                       # jr nz,@done
     # @checkRings
     b'\xcd',EITHER_RING,              # call eitherRingActive
     b'\x28\x04',                      # jr z,@speedIncrease
@@ -46,6 +48,7 @@ RANG_CHECK1_ASM = [
     b'\x36\x78',                      # ld (hl),$78
     # @done
     b'\x01',RANG_RING_L1,RANG_RING_L2,# ld bc,RANG_RING_L2,RANG_RING_L1
+    b'\xcd',EITHER_RING,              # call eitherRingActive
     b'\xc9',                          # ret
     ]
 
